@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Авторизация{% endblock %}
+{% block content %}
+<div class="login-page">
+  <div class="form">
+    <form class="register-form">
+      <input type="text" placeholder="name"/>
+      <input type="password" placeholder="password"/>
+      <input type="text" placeholder="email address"/>
+      <button>Создать</button>
+      <p class="message">Уже зарегистрированы? <a href="#">Войти</a></p>
+    </form>
+    <form class="login-form">
+      <input type="text" placeholder="username"/>
+      <input type="password" placeholder="password"/>
+      <button>Войти</button>
+      <p class="message">Не зарегистрированы? <a href="#">Создать аккаунт</a></p>
+    </form>
+  </div>
+</div>
+{% endblock content %}

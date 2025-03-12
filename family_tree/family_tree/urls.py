@@ -23,6 +23,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
+# Пути для работы с пользователями
+urlpatterns += [
+    path('user/', include('django.contrib.auth.urls')),
+]
+
 if settings.DEBUG:
     import debug_toolbar
 

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'img/fav/favicon.ico' %}" type="image">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/fav/apple-touch-icon.jpg' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/fav/favicon-tree-32x32.jpg' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/fav/favicon-tree-16x16.jpg' %}">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</head>
+<body>
+{#    {% include "includes/header.html" %}#}
+    <main>
+      <div class="container py-5">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+{#    {% include "includes/footer.html" %}#}
+</body>
+</html>
