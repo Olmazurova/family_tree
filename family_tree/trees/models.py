@@ -1,3 +1,117 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
-# Create your models here.
+from .utils import change_owner_or_delete
+
+LENGTH_SURNAME = 100
+LENGTH_NAME = 50
+GENDER_CHOICE = (('м', 'Мужской'), ('ж', 'Женский'))
+
+User = get_user_model()
+
+
+class Tree(models.Model):
+    """Описывает древо рода."""
+
+    genus_name = models.CharField(
+        'Имя рода',
+        max_length=LENGTH_SURNAME,
+    )
+    created_at = models.DateTimeField(
+        'Создан',
+        auto_now_add=True,
+    )
+    changed_at = models.DateTimeField(
+        'Изменён',
+        blank=True,
+        auto_now=True,
+    )
+    info = models.TextField(
+        'Описание',
+        blank=True,
+    )
+    linked_tree = models.ManyToManyField(
+        'self',
+        blank=True,
+        verbose_name='Связанное древо'
+    )
+    owner = models.ForeignKey(
+        User,
+        verbose_name='Владелец',
+        on_delete=models.SET(change_owner_or_delete),
+    )
+    is_public = models.BooleanField(
+        default=False,
+        verbose_name='Публичное',
+        help_text='Поставьте галочку, чтобы сделать древо публичным.',
+    )
+    slug = models.SlugField(
+        unique=True,
+        verbose_name='Идентификатор',
+        help_text=('Идентификатор страницы для URL; '
+                   'разрешены символы латиницы, цифры, дефис и подчёркивание.'),
+    )
+
+class Person(models.Model):
+    """Описывает конкретного человека."""
+
+    genus_name = models.ManyToManyField(Tree, verbose_name='Род')
+    surname = models.CharField('Фамилия', max_length=LENGTH_SURNAME)
+    name = models.CharField(
+        'Имя',
+        max_length=LENGTH_NAME,
+        blank=True,
+    )
+    maiden_name = models.CharField(
+        'Девичья фамилия',
+        max_length=LENGTH_SURNAME,
+        blank=True,
+    )
+    patronymic = models.CharField(
+        'Отчество',
+        max_length=LENGTH_NAME,
+        blank=True,
+    )
+    birthday = models.DateField(
+        'День рождения',
+        blank=True,
+    )
+    date_of_death = models.DateField(
+        'Дата смерти',
+        blank=True,
+    )
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICE,
+        verbose_name='Пол',
+    )
+    biography = models.TextField(
+        'Биография',
+        blank=True,
+    )
+    photo = models.ImageField(
+        'Фото',
+        blank=True,
+        upload_to='person_photo',
+    )
+    father = models.ForeignKey(
+        'self',
+        blank=True,
+        verbose_name='Отец'
+    )
+    mother = models.ForeignKey(
+        'Person',
+        blank=True,
+        verbose_name='Мать'
+    )
+    spouse = models.ForeignKey(
+        'Person',
+        blank=True,
+        verbose_name='Супруг',
+    )
+    child = models.ForeignKey(
+        'Person',
+        blank=True,
+        verbose_name='Ребёнок',
+    )
+
