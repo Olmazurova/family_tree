@@ -53,7 +53,7 @@ class PersonAdmin(admin.ModelAdmin):
         'father',
         'mother',
         'spouse',
-        'child'
+        'child',
     )
     list_filter = (
         'genus_name',

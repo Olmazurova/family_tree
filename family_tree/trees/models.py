@@ -18,11 +18,11 @@ class Tree(models.Model):
         max_length=LENGTH_SURNAME,
     )
     created_at = models.DateTimeField(
-        'Создан',
+        'Создано',
         auto_now_add=True,
     )
     changed_at = models.DateTimeField(
-        'Изменён',
+        'Изменено',
         blank=True,
         auto_now=True,
     )
