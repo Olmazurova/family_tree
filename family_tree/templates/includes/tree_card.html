@@ -1,0 +1,23 @@
+<div class="col d-flex justify-content-center">
+  <div class="card" style="width: 40rem;">
+    <div class="card-body">
+{#      {% if post.image %} сейчас у древа нет картинок#}
+{#        <a href="{{ post.image.url }}" target="_blank">#}
+{#          <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ post.image.url }}">#}
+{#        </a>#}
+{#      {% endif %}#}
+      <h5 class="card-title">{{ tree.genus_name }}</h5>
+      <h6 class="card-subtitle mb-2 text-muted">
+        <small>
+          {% if not tree.is_published %}
+            <p class="text-danger">Это древо не является публичным, просмотр разрешён только владельцу.</p>
+          {% endif %}
+          Создано: {{ tree.created_at|date:"d E Y, H:i" }} | Изменено: {% if tree.changed_at %}{{ tree.changed_at|date:"d E Y, H:i" }}{% else %}Изменений не было.{% endif %}<br>
+          Владелец <a class="text-muted" href="{% url 'users:profile' tree.owner.username %}">@{{ tree.owner.username }}</a>
+        </small>
+      </h6>
+      <p class="card-text">{{ tree.info|truncatewords:10 }}</p>
+      <a href="{% url 'trees:tree_detail' tree.slug %}" class="card-link">Подробнее</a>
+    </div>
+  </div>
+</div>

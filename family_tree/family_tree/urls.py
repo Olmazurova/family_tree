@@ -19,6 +19,9 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 
+from family_tree.trees.views import HomeView
+from family_tree.users.views import UserCreate
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
@@ -26,6 +29,15 @@ urlpatterns = [
 # Пути для работы с пользователями
 urlpatterns += [
     path('user/', include('django.contrib.auth.urls')),
+    path('user/registration', UserCreate.as_view(), name='registration')
+]
+
+# Кастомные пути
+urlpatterns += [
+    path('home/', HomeView.as_view(), name='home'),
+    path('profile/', include('users.urls')),
+    path('tree/', include('trees.urls')),
+    path('', HomeView.as_view(), name='home'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Древо Рода{% endblock %}
+{% block content %}
+    <h1>Заголовок</h1>
+    <p>Информация о проекте</p>
+{#здесь нужно сделать какое-то логическое отедление#}
+    <h2>Опубликованные древа Рода</h2>
+    {% if not page_obj %}
+        Ещё никто не создал публичное древо Рода.
+    {% else %}
+        {% for tree in page_obj %}
+            <article class="mb-5">
+          {% include "includes/tree_card.html" %}
+        </article>
+        {% endfor %}
+        {% include "includes/paginator.html" %}
+    {% endif %}
+{% endblock content %}

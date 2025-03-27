@@ -1,22 +1,39 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 {% load static %}
 {% block title %}Авторизация{% endblock %}
 {% block content %}
-<div class="login-page">
-  <div class="form">
-    <form class="register-form">
-      <input type="text" placeholder="name"/>
-      <input type="password" placeholder="password"/>
-      <input type="text" placeholder="email address"/>
-      <button>Создать</button>
-      <p class="message">Уже зарегистрированы? <a href="#">Войти</a></p>
-    </form>
-    <form class="login-form">
-      <input type="text" placeholder="username"/>
-      <input type="password" placeholder="password"/>
-      <button>Войти</button>
-      <p class="message">Не зарегистрированы? <a href="#">Создать аккаунт</a></p>
-    </form>
+    {% if next %}
+    {% if user.is_authenticated %}
+      <p class="text-center">
+        У вашего аккаунта нет доступа к этой странице.
+        Чтобы продолжить, войдите в систему с аккаунтом,
+        у которого есть доступ.
+      </p>
+    {% else %}
+      <p class="text-center">
+        Пожалуйста, войдите в систему,
+        чтобы просматривать эту страницу.
+      </p>
+    {% endif %}
+  {% endif %}
+  <div class="col d-flex justify-content-center">
+    <div class="card" style="width: 40rem;">
+      <div class="card-header">
+        Войти в систему
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <input type="hidden" name="next" value="{{ next }}">
+          {% bootstrap_button button_type="submit" content="Войти" %}
+        </form>
+        <div>
+          <a href="{% url 'password_reset' %}">Забыли пароль?</a> |
+            <a href="{% url 'registration' %}">Зарегистрироваться!</a>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 {% endblock content %}
