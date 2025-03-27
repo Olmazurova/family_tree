@@ -97,21 +97,33 @@ class Person(models.Model):
     father = models.ForeignKey(
         'self',
         blank=True,
-        verbose_name='Отец'
+        verbose_name='Отец',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='my_father',
     )
     mother = models.ForeignKey(
         'Person',
         blank=True,
-        verbose_name='Мать'
+        verbose_name='Мать',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='my_mother',
     )
     spouse = models.ForeignKey(
         'Person',
         blank=True,
         verbose_name='Супруг',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='my_spouse',
     )
     child = models.ForeignKey(
         'Person',
         blank=True,
         verbose_name='Ребёнок',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='my_child',
     )
 

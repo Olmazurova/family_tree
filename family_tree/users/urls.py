@@ -1,6 +1,6 @@
 from django.urls import path
 
-from views import UserCreate, UserProfileDetail, UserProfileUpdate
+from .views import UserProfileDetail, UserProfileUpdate
 
 app_name = 'users'
 

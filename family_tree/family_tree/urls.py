@@ -19,8 +19,8 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 
-from family_tree.trees.views import HomeView
-from family_tree.users.views import UserCreate
+from trees.views import HomeView
+from users.views import UserCreate
 
 urlpatterns = [
     path('admin/', admin.site.urls),

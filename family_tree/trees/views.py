@@ -12,7 +12,7 @@ class HomeView(ListView):
     model = Tree
     paginate_by = NUMBER_OF_TREES
     template_name = 'trees/home.html'
-    queryset = Tree.objects.filter(is_public=True).order_by('created_by')
+    queryset = Tree.objects.filter(is_public=True).order_by('created_at')
 
 
 class MyTreeList(ListView):

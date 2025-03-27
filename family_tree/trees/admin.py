@@ -14,7 +14,7 @@ class TreeAdmin(admin.ModelAdmin):
         'created_at',
         'changed_at',
         'info',
-        'linked_tree',
+        # 'linked_tree', # как в админке отобразить поля M:N?
         'owner',
         'is_public',
         'slug'
@@ -40,7 +40,7 @@ class PersonAdmin(admin.ModelAdmin):
     """Класс администрирования человека."""
 
     list_display = (
-        'genus_name',
+        # 'genus_name', # как в админке отобразить поля M:N?
         'surname',
         'name',
         'maiden_name',
@@ -56,7 +56,7 @@ class PersonAdmin(admin.ModelAdmin):
         'child',
     )
     list_filter = (
-        'genus_name',
+        # 'genus_name',
         'surname',
         'name',
         'maiden_name',
@@ -65,7 +65,7 @@ class PersonAdmin(admin.ModelAdmin):
         'gender',
     )
     list_display_links = (
-        'genus_name',
+        # 'genus_name',
         'surname',
         'name',
         'maiden_name',
