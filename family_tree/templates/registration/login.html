@@ -27,7 +27,7 @@
           {% csrf_token %}
           {% bootstrap_form form %}
           <input type="hidden" name="next" value="{{ next }}">
-          {% bootstrap_button button_type="submit" content="Войти" %}
+          {% bootstrap_button button_type="submit" class="btn btn-outline-success" content="Войти" %}
         </form>
         <div>
           <a href="{% url 'password_reset' %}">Забыли пароль?</a>

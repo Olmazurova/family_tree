@@ -9,7 +9,7 @@
           {% with request.resolver_match.view_name as view_name %}
         <ul class="nav  nav-pills">
           <li class="nav-item">
-            <a class="nav-link {% if view_name == '' %} text-success {% endif %}" href="">
+            <a class="nav-link {% if view_name == 'rules' %} text-success {% endif %}" href="{% url 'rules' %}">
               Правила
             </a>
           </li>

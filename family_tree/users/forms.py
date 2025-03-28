@@ -9,7 +9,15 @@ class UserForm(UserCreationForm):
 
     class Meta:
         model = User
-        exclude = ('is_staff', 'is_active', 'date_joined')
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'about_oneself',
+            'photo',
+            'birthday',
+        )
 
 class UserEditForm(UserChangeForm):
     """Форма редактирования пользователя."""

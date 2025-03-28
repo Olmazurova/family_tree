@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Информация о члене древа {{ tree.genus_name }}{% endblock %}
+{% block content %}
+    <h2>Информация о члене древа {{ tree.genus_name }}</h2>
+    {% if person.photo %}
+        <a href="{{ person.photo.url }}" target="_blank">
+          <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ person.photo.url }}">
+        </a>
+      {% endif %}
+    <p><b>Фамилия: </b>{{ person.surname }}</p>
+    <p><b>Имя: </b>{{ person.name }}</p>
+    <p><b>Отчество: </b>{{ person.patronymic }}</p><br>
+    <p><b>Дата рождения: </b>{{ person.birthday }}</p>
+    <p><b>Дата смерти: </b>{{ person.date_of_death }}</p>
+    <p><b>Пол: </b>{{ person.gender }}</p><br>
+    <p><b>Отец: </b>{{ person.father }}</p>
+    <p><b>Мать: </b>{{ person.mother }}</p>
+    <p><b>Супруг(а): </b>{{ person.spouse }}</p>
+    {% for child in children %}
+      {% if child.gender == 'м' %}
+        Сын - {{ child.fullname }}
+      {% else %}
+        Дочь - {{ child.fullname }}
+    {% endif %}
+    {% endfor %}
+    <br>
+    <h3>Биография:</h3>
+    <p>{{ person.biography }}</p>
+
+
+
+{% endblock content %}

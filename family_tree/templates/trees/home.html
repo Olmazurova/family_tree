@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Древо Рода{% endblock %}
 {% block content %}
+{#    <div class="container" style="background-color: #50c878">#}
     <h1>Заголовок</h1>
     <p>Информация о проекте</p>
 {#здесь нужно сделать какое-то логическое отедление#}
@@ -15,4 +16,5 @@
         {% endfor %}
         {% include "includes/paginator.html" %}
     {% endif %}
+{#    </div>#}
 {% endblock content %}
