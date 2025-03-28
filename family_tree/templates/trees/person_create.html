@@ -1,6 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Добавление члена в древо Рода{% endblock %}
+{% load django_bootstrap5 %}
+{% block title %}Добавление члена родословной{% endblock %}
 {% block content %}
-    <h2>Создание члена родословной</h2>
+{#    <h2 class="text-center">Создание древа Рода</h2>#}
+    <div class="col d-flex justify-content-center">
+    <div class="card border-success mb-3" style="width: 40rem;">
+      <div class="card-header bg-transparent border-success text-center">
+        Добавление члена Рода {{ tree_obj.genus_name }}
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          {% bootstrap_button button_type="submit" content="Создать" button_class="btn-success" %}
+        </form>
+      </div>
+        <div class="card-footer"></div>
+    </div>
+  </div>
 
 {% endblock content %}

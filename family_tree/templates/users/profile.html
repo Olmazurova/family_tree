@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Профиль пользователя {{ user.username }}</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Профиль пользователя {{ user.username }}{% endblock %}
+{% block content %}
+    <h2 class="text-center">Информация о пользователе {{ user.username }}</h2>
+    {% if user.photo %}
+        <a href="{{ user.photo.url }}" target="_blank">
+          <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ user.photo.url }}">
+        </a>
+      {% endif %}
+    <div class="card-body">
+      <p><b>Фамилия: </b>{{ user.last_name }}</p>
+      <p><b>Имя: </b>{{ user.first_name }}</p>
+      <p><b>Дата рождения: </b>{{ user.birthday }}</p><br>
+    </div>
+    <div class="card">
+    <b>О себе: </b><p>{{ user.about_oneself }}</p></div>
 
-</body>
-</html>
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}Выход из профиля пользователя {{ user.username }}{% endblock %}
+{% block content %}
+    <h2 class="text-center">Выход из профиля пользователя {{ user.username }}</h2>
+    <div class="text-center py-3">
+<form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    {% bootstrap_button button_type="submit" content="Выйти" button_class="btn-outline-dark btn-lg" %}
+</form>
+    </div>
+{% endblock content %}

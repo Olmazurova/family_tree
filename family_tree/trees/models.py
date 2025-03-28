@@ -52,10 +52,19 @@ class Tree(models.Model):
                    'разрешены символы латиницы, цифры, дефис и подчёркивание.'),
     )
 
+    class Meta:
+        ordering = ('created_at',)
+        verbose_name = 'Древо'
+        verbose_name_plural = 'Древа'
+
+    def __str__(self):
+        return self.genus_name
+
+
 class Person(models.Model):
     """Описывает конкретного человека."""
 
-    genus_name = models.ManyToManyField(Tree, verbose_name='Род')
+    genus_name = models.ManyToManyField(Tree, verbose_name='Род', related_name='tree_id')
     surname = models.CharField('Фамилия', max_length=LENGTH_SURNAME)
     name = models.CharField(
         'Имя',
@@ -126,4 +135,12 @@ class Person(models.Model):
         null=True,
         related_name='my_child',
     )
+
+    class Meta:
+        verbose_name = 'член родословной'
+        verbose_name_plural = 'Члены родословной'
+        ordering = ('birthday',)
+
+    def __str__(self):
+        return f'{self.surname} {self.name}'
 

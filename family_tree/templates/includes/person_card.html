@@ -1,0 +1,13 @@
+<div class="col d-flex justify-content-center">
+  <div class="card" style="width: 40rem;">
+      <div class="card-header bg-transparent border-success text-lg-start">
+          <h5 class="card-title">{{ person.surname }} {{ person.name }}</h5>
+      </div>
+    <div class="card-body p-2">
+      <p class="card-text">День рождения: {{ person.birthday|date:"d E Y" }}</p>
+      <p class="card-text">Дата смерти: {{ person.date_of_death|date:"d E Y" }}</p>
+
+      <a href="{% url 'trees:person' slug=tree_obj.slug id=person.id %}" class="card-link text-success">Подробнее</a>
+    </div>
+  </div>
+</div>

@@ -4,25 +4,27 @@
     <div class="container">
       <a class="navbar-brand" href="{% url 'home' %}">
         <img src="{% static 'img/tree-logo.jpg' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-        Древо Рода
+        Родословная
       </a>
           {% with request.resolver_match.view_name as view_name %}
         <ul class="nav  nav-pills">
           <li class="nav-item">
-            <a class="nav-link {% if view_name == 'rules' %} text-success {% endif %}" href="{% url 'rules' %}">
+            <a class="nav-link {% if view_name == 'rules' %} text-dark {% else %} text-success {% endif %}" href="{% url 'rules' %}">
               Правила
             </a>
           </li>
           {% if user.is_authenticated %}
             <div class="btn-group" role="group" aria-label="Basic outlined example">
-              <button type="button" class="btn btn-outline-primary"><a class="text-decoration-none text-reset"
-                  href="{% url 'trees:create_tree' %}">Создать древо</a></button>
-                <button type="button" class="btn btn-outline-primary"><a class="text-decoration-none text-reset"
+              {% if view_name != 'trees:tree_detail' %}
+                <button type="button" class="btn btn-outline-success"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_create' %}">Создать древо</a></button>
+              {% endif %}
+                <button type="button" class="btn btn-outline-success"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:tree_list' %}">Мои древа</a></button>
-              <button type="button" class="btn btn-outline-primary"><a class="text-decoration-none text-reset"
+              <button type="button" class="btn btn-outline-success"><a class="text-decoration-none text-reset"
                   href="{% url 'users:profile' user.username %}">{{ user.username }}</a></button>
-              <button type="button" class="btn btn-outline-primary"><a class="text-decoration-none text-reset"
-                  href="{% url 'logout' %}">Выйти</a></button>
+              <button type="button" class="btn btn-outline-success"><a class="text-decoration-none text-reset"
+                  href="{% url 'users:profile_logout' %}">Выйти</a></button>
             </div>
           {% else %}
             <div class="btn-group" role="group" aria-label="Basic outlined example">

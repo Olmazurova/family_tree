@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
+from django.urls import reverse_lazy
 
 from .models import Tree, Person
 from .forms import TreeForm, PersonForm
@@ -15,7 +16,7 @@ class HomeView(ListView):
     model = Tree
     paginate_by = NUMBER_OF_TREES
     template_name = 'trees/home.html'
-    queryset = Tree.objects.filter(is_public=True).order_by('created_at')
+    queryset = Tree.objects.filter(is_public=True)
 
 
 class MyTreeList(ListView):
@@ -34,6 +35,16 @@ class TreeDetail(DetailView):
 
     model = Tree
     template_name = 'trees/tree_detail.html'
+    context_object_name = 'tree_obj'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['trees'] = Tree.objects.filter(linked_tree=context['tree_obj'].id)
+        context['members'] = Person.objects.filter(genus_name=context['object'].id)
+        print(context)
+        for mem in context['members']:
+            print(mem.genus_name)
+        return context
 
 
 class TreeCreate(LoginRequiredMixin, CreateView):
@@ -42,7 +53,7 @@ class TreeCreate(LoginRequiredMixin, CreateView):
     model = Tree
     form_class = TreeForm
     template_name = 'trees/create_tree.html'
-    success_url = 'home'
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -54,7 +65,7 @@ class TreeDelete(DeleteView):
 
     model = Tree
     template_name = 'trees/create_tree.html'
-    success_url = 'home'
+    success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,7 +81,7 @@ class TreeUpdate(UpdateView):
     model = Tree
     form_class = TreeForm
     template_name = 'trees/create_tree.html'
-    success_url = 'home'
+    success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -86,9 +97,16 @@ class PersonDetail(LoginRequiredMixin, DetailView):
     model = Person
     template_name = 'trees/person_detail.html'
 
+    def get_object(self, queryset=None):
+        obj = get_object_or_404(Person, id=self.kwargs['id'])
+        return obj
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['tree'] = Tree.objects.filter(id=self.kwargs['slug'])
         context['children'] = Person.objects.filter(Q(father=self.kwargs['id']) | Q(mother=self.kwargs['id']))
+        print(context)
         return context
 
 
@@ -98,7 +116,7 @@ class PersonCreate(LoginRequiredMixin, CreateView):
     model = Person
     form_class = PersonForm
     template_name = 'trees/person_create.html'
-    success_url = 'home'
+    success_url = reverse_lazy('home')
 
 
 
@@ -108,7 +126,7 @@ class PersonUpdate(LoginRequiredMixin, UpdateView):
     model = Person
     form_class = PersonForm
     template_name = 'trees/person_create.html'
-    success_url = 'home'
+    success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,7 +141,7 @@ class PersonDelete(LoginRequiredMixin, DeleteView):
 
     model = Person
     template_name = 'trees/person_create.html'
-    success_url = 'home'
+    success_url = reverse_lazy('home')
 
     # Он здесь нужен???
     def get_context_data(self, **kwargs):
@@ -138,7 +156,3 @@ class RulesView(TemplateView):
     """Представление страницы правил проекта 'древо Рода'"""
 
     template_name = 'rules.html'
-
-
-
-
