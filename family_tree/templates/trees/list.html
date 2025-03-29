@@ -1,3 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Список публичных древ{% endblock %}
-{% block content %}Список публичных древ{% endblock content %}
+{% block title %}Список родословных{% endblock %}
+{% block content %}
+<div  class="col-6 offset-3 mb-5 lead text-lg-start">
+    <h2 class="text-center">Список родословных</h2>
+    {% if not page_obj %}
+        <p class="text-center">У вас нет ни одной родословной.</p>
+    {% else %}
+        {% for tree in page_obj %}
+            <article class="mb-5">
+          {% include "includes/tree_card.html" %}
+        </article>
+        {% endfor %}
+        {% include "includes/paginator.html" %}
+    {% endif %}
+    </div>
+{% endblock content %}

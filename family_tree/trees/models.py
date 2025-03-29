@@ -64,7 +64,7 @@ class Tree(models.Model):
 class Person(models.Model):
     """Описывает конкретного человека."""
 
-    genus_name = models.ManyToManyField(Tree, verbose_name='Род', related_name='tree_id')
+    genus_name = models.ManyToManyField(Tree, verbose_name='Род', related_name='person_id')
     surname = models.CharField('Фамилия', max_length=LENGTH_SURNAME)
     name = models.CharField(
         'Имя',
@@ -84,10 +84,12 @@ class Person(models.Model):
     birthday = models.DateField(
         'День рождения',
         blank=True,
+        null=True,
     )
     date_of_death = models.DateField(
         'Дата смерти',
         blank=True,
+        null=True,
     )
     gender = models.CharField(
         max_length=1,

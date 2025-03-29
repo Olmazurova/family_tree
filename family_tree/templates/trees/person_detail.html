@@ -1,12 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Информация о члене древа {{ tree.genus_name }}{% endblock %}
+{% block title %}Информация о {{ person }}{% endblock %}
 {% block content %}
-    <h2>Информация о члене древа {{ tree.genus_name }}</h2>
+    <h2>Информация о {{ person }}</h2>
     {% if person.photo %}
         <a href="{{ person.photo.url }}" target="_blank">
           <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ person.photo.url }}">
         </a>
       {% endif %}
+    <p><b>Род:</b>{{ person_tree }}</p>
+
     <p><b>Фамилия: </b>{{ person.surname }}</p>
     <p><b>Имя: </b>{{ person.name }}</p>
     <p><b>Отчество: </b>{{ person.patronymic }}</p><br>
@@ -26,7 +28,11 @@
     <br>
     <h3>Биография:</h3>
     <p>{{ person.biography }}</p>
-
-
+    <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:person_edit' slug=person_tree.slug id=person.id %}">Редактировать</a></button>
+      <button type="button" class="btn btn-danger"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:person_delete' slug=person_tree.slug id=person.id %}">Удалить</a></button>
+    </div>
 
 {% endblock content %}

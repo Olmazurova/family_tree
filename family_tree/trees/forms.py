@@ -1,4 +1,7 @@
+
+from datetime import date
 from django import forms
+from django.core.exceptions import ValidationError
 
 from .models import Tree, Person
 
@@ -37,6 +40,13 @@ class PersonForm(forms.ModelForm):
             'child',
         )
         widgets = {
-            'birthday': forms.DateInput(attrs={'type': 'date'}),
-            'date_of_death': forms.DateInput(attrs={'type': 'date'}),
+            'birthday': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
+            'date_of_death': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),
         }
+
+    def clean(self):
+        birthday_date = self.cleaned_data['birthday']
+        death_date = self.cleaned_data['date_of_death']
+
+        if isinstance(birthday_date, date) and isinstance(death_date, date) and death_date < birthday_date:
+            raise ValidationError('Дата смерти не может быть раньше даты рождения!')

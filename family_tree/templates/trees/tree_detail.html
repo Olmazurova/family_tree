@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
-{% block title %}Древо Рода {{ tree_obj.genus_name }}{% endblock %}
+{% block title %}Родословная {{ tree_obj.genus_name }}{% endblock %}
 {% block content %}
-    <h2 class="text-center">Древо Рода {{ tree_obj.genus_name }}</h2>
+    <h2 class="text-center">Родословная {{ tree_obj.genus_name }}</h2>
     {% if tree_obj.photo %}
         <a href="{{ tree_obj.photo.url }}" target="_blank">
           <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ tree_obj.photo.url }}">
@@ -14,11 +14,6 @@
     <p><b>Владелец: </b>
         <a class="text-decoration-none text-reset"
                   href="{% url 'users:profile' tree_obj.owner %}">{{ tree_obj.owner }}</a></p>
-    <div class="text-center py-5">
-    <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
-                  href="{% url 'trees:person_create' tree_obj.slug %}">Добавить члена родословной</a></button>
-    </div>
-
     <p><b>Члены рода:</b></p>
     {% for person in members %}
       <article class="mb-5">
@@ -26,7 +21,16 @@
         </article>
     {% endfor %}
 
-    <p><b>Связанные древа:</b></p>
+    <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
+      <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:person_create' tree_obj.slug %}">Добавить члена родословной</a></button>
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_edit' tree_obj.slug %}">Редактировать родословную</a></button>
+      <button type="button" class="btn btn-danger"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_delete' tree_obj.slug %}">Удалить родословную</a></button>
+    </div>
+
+    <p><b>Связанные родословные:</b></p>
     {% for tree in trees %}
       <article class="mb-5">
           {% include "includes/tree_card.html" %}

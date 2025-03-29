@@ -19,7 +19,7 @@ class HomeView(ListView):
     queryset = Tree.objects.filter(is_public=True)
 
 
-class MyTreeList(ListView):
+class MyTreeList(LoginRequiredMixin, ListView):
     """Представление списка древ Рода, владельцем которых являтеся пользователь."""
 
     model = Tree
@@ -104,8 +104,9 @@ class PersonDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tree'] = Tree.objects.filter(id=self.kwargs['slug'])
+        context['person_tree'] = Tree.objects.get(person_id=self.kwargs['id'])
         context['children'] = Person.objects.filter(Q(father=self.kwargs['id']) | Q(mother=self.kwargs['id']))
+        print(kwargs['object'])
         print(context)
         return context
 
@@ -118,6 +119,14 @@ class PersonCreate(LoginRequiredMixin, CreateView):
     template_name = 'trees/person_create.html'
     success_url = reverse_lazy('home')
 
+    # def form_valid(self, form):
+    #     new_person = form.instance
+    #     new_person.save()
+    #     new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
+    #     # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
+    #     # form.instance.genus_name.set(tree_obj)
+    #     return super().form_valid(form)
+
 
 
 class PersonUpdate(LoginRequiredMixin, UpdateView):
@@ -128,9 +137,12 @@ class PersonUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'trees/person_create.html'
     success_url = reverse_lazy('home')
 
+    def get_object(self, queryset=None):
+        return get_object_or_404(Person, id=self.kwargs['id'])
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        instance = get_object_or_404(Person, pk=self.kwargs['id'])
+        instance = self.get_object()
         form = PersonForm(self.request.POST or None, instance=instance)
         context['form'] = form
         return context
