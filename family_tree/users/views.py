@@ -40,6 +40,16 @@ class UserProfileUpdate(UpdateView):
     template_name = 'users/profile_edit.html'
     success_url = reverse_lazy('home')
 
+    def get_object(self, queryset=None):
+        return User.objects.get(id=self.request.user.id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = self.get_object()
+        form = UserEditForm(self.request.POST or None, instance=instance)
+        context['form'] = form
+        return context
+
 
 class UserProfileLogout(TemplateView):
     """Представление выхода из профиля пользователя."""

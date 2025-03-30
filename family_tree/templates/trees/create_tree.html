@@ -1,18 +1,49 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
-{% block title %}Создание древа Рода{% endblock %}
+{% block title %}
+    {% if '/edit/' in request.path %}
+            Редактирование древа Рода
+          {% elif '/delete/' in request.path %}
+            Удаление древа Рода
+          {% else %}
+            Создание древа Рода
+          {% endif %}
+{% endblock %}
 {% block content %}
-{#    <h2 class="text-center">Создание древа Рода</h2>#}
     <div class="col d-flex justify-content-center">
     <div class="card border-success mb-3" style="width: 40rem;">
       <div class="card-header bg-transparent border-success text-center">
-        Создание древа Рода
+          {% if '/edit/' in request.path %}
+            Редактирование древа Рода
+          {% elif '/delete/' in request.path %}
+            Удаление древа Рода
+          {% else %}
+            Создание древа Рода
+          {% endif %}
       </div>
       <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
-          {% bootstrap_form form %}
-          {% bootstrap_button button_type="submit" content="Создать" button_class="btn-success" %}
+            {% if not '/delete/' in request.path %}
+              {% bootstrap_form form %}
+              {% if '/edit/' in request.path %}
+                {% bootstrap_button button_type="submit" content="Сохранить" button_class="btn-success" %}
+              {% elif '/create/' in request.path %}
+                {% bootstrap_button button_type="submit" content="Создать" button_class="btn-success" %}
+              {% endif %}
+            {% else %}
+              <h2 class="text-center">Родословная {{ tree.genus_name }}</h2>
+              {% if tree.photo %}
+                <a href="{{ tree.photo.url }}" target="_blank">
+                <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ tree.photo.url }}">
+                </a>
+              {% endif %}
+              <p><b>Создано: </b>{{ tree.created_at }}</p>
+              <p><b>Изменено: </b>{{ tree.changed_at }}</p>
+              <p><b>Описание: </b><p>{{ tree.info }}</p></p><br>
+              <p><b>Владелец: </b>{{ tree.owner }}</p>
+              {% bootstrap_button button_type="submit" content="Удалить" button_class="btn-danger" %}
+            {% endif %}
         </form>
       </div>
         <div class="card-footer"></div>

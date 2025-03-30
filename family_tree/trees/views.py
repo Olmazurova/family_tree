@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
 from django.urls import reverse_lazy
+from pytils.translit import slugify
 
 from .models import Tree, Person
 from .forms import TreeForm, PersonForm
@@ -57,6 +58,8 @@ class TreeCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        if not form.instance.slug:
+            form.instance.slug = slugify(form.instance.genus_name)
         return super().form_valid(form)
 
 
@@ -155,12 +158,16 @@ class PersonDelete(LoginRequiredMixin, DeleteView):
     template_name = 'trees/person_create.html'
     success_url = reverse_lazy('home')
 
+    def get_object(self, queryset =None):
+        return get_object_or_404(Person, id=self.kwargs['id'])
+
     # Он здесь нужен???
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         instance = get_object_or_404(Person, pk=self.kwargs['id'])
         form = PersonForm(self.request.POST or None, instance=instance)
         context['form'] = form
+        print(context)
         return context
 
 

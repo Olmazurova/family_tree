@@ -3,9 +3,10 @@
 {% block content %}
     <h2 class="text-center">Информация о пользователе {{ user.username }}</h2>
     {% if user.photo %}
+         <div class="col-md-4">
         <a href="{{ user.photo.url }}" target="_blank">
           <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ user.photo.url }}">
-        </a>
+        </a></div>
       {% endif %}
     <div class="card-body">
       <p><b>Фамилия: </b>{{ user.last_name }}</p>
@@ -13,6 +14,11 @@
       <p><b>Дата рождения: </b>{{ user.birthday }}</p><br>
     </div>
     <div class="card">
-    <b>О себе: </b><p>{{ user.about_oneself }}</p></div>
+    <b>О себе: </b><p>{{ user.about_oneself }}</p></div><br>
+
+    <div class="text-center">
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'users:profile_edit' %}">Редактировать</a></button>
+    </div><br>
 
 {% endblock content %}

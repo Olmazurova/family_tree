@@ -4,7 +4,7 @@
       <h5 class="card-title">{{ tree.genus_name }}</h5>
       <h6 class="card-subtitle mb-2 text-muted">
         <small>
-          {% if not tree.is_published %}
+          {% if not tree.is_public %}
             <p class="text-danger">Это древо не является публичным, просмотр разрешён только владельцу.</p>
           {% endif %}
           Создано: {{ tree.created_at|date:"d E Y, H:i" }} | Изменено: {% if tree.changed_at %}{{ tree.changed_at|date:"d E Y, H:i" }}{% else %}Изменений не было.{% endif %}<br>

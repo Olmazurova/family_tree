@@ -3,36 +3,60 @@
 {% block content %}
     <h2>Информация о {{ person }}</h2>
     {% if person.photo %}
+        <div class="col-md-4">
         <a href="{{ person.photo.url }}" target="_blank">
-          <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ person.photo.url }}">
-        </a>
+          <img class="border-3 rounded img-thumbnail img-fluid d-block" src="{{ person.photo.url }}" height="100">
+        </a></div>
       {% endif %}
-    <p><b>Род:</b>{{ person_tree }}</p>
+    <p><b>Род: </b><a href="{% url 'trees:tree_detail' person_tree.slug %}" class="text-dark">{{ person_tree }}</a></p>
 
-    <p><b>Фамилия: </b>{{ person.surname }}</p>
-    <p><b>Имя: </b>{{ person.name }}</p>
-    <p><b>Отчество: </b>{{ person.patronymic }}</p><br>
-    <p><b>Дата рождения: </b>{{ person.birthday }}</p>
-    <p><b>Дата смерти: </b>{{ person.date_of_death }}</p>
+    <p><b>Фамилия: </b>{% if person.surname %}{{ person.surname }}{% else %}неизвестно{% endif %}</p>
+    <p><b>Имя: </b>{% if person.name %}{{ person.name }}{% else %}неизвестно{% endif %}</p>
+    <p><b>Отчество: </b>{% if person.patronymic %}{{ person.patronymic }}{% else %}неизвестно{% endif %}</p><br>
+    <p><b>Дата рождения: </b>{% if person.birthday %}{{ person.birthday }}{% else %}неизвестно{% endif %}</p>
+    <p><b>Дата смерти: </b>{% if person.date_of_death %}{{ person.date_of_death }}{% else %}неизвестно{% endif %}</p>
     <p><b>Пол: </b>{{ person.gender }}</p><br>
-    <p><b>Отец: </b>{{ person.father }}</p>
-    <p><b>Мать: </b>{{ person.mother }}</p>
-    <p><b>Супруг(а): </b>{{ person.spouse }}</p>
-    {% for child in children %}
-      {% if child.gender == 'м' %}
-        Сын - {{ child.fullname }}
-      {% else %}
-        Дочь - {{ child.fullname }}
+    <p><b>Отец: </b>
+        {% if person.father %}
+            <a href="{% url 'trees:person' slug=person_tree.slug id=person.father.id %}" class="text-dark">{{ person.father }}</a>
+        {% else %}неизвестно
+        {% endif %}
+    </p>
+    <p><b>Мать: </b>
+        {% if person.mother %}
+            <a href="{% url 'trees:person' slug=person_tree.slug id=person.mother.id %}" class="text-dark">{{ person.mother }}</a>
+        {% else %}неизвестно
+        {% endif %}
+    </p>
+    <p><b>Супруг(а): </b>
+        {% if person.spouse %}
+            <a href="{% url 'trees:person' slug=person_tree.slug id=person.spouse.id %}" class="text-dark">{{ person.spouse }}</a>
+        {% else %}неизвестно
+        {% endif %}
+    </p>
+    {% if children %}
+        <ul>
+        {% for child in children %}
+            {% if child.gender == 'м' %}
+                <li>Сын - {{ child }}</li>
+            {% else %}
+                <li>Дочь - {{ child }}</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+{#    <br>#}
+    {% else %}
+    <p>Информации о детях нет.</p>
     {% endif %}
-    {% endfor %}
-    <br>
     <h3>Биография:</h3>
-    <p>{{ person.biography }}</p>
+    {% if person.biography %}<p>{{ person.biography }}{% else %}Биография пока пуста.{% endif %}</p><br>
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
         <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:person_edit' slug=person_tree.slug id=person.id %}">Редактировать</a></button>
       <button type="button" class="btn btn-danger"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:person_delete' slug=person_tree.slug id=person.id %}">Удалить</a></button>
-    </div>
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_detail' slug=person_tree.slug %}">Вернуться к роду</a></button>
+    </div><br>
 
 {% endblock content %}

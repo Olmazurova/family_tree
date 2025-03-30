@@ -1,10 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Редактирование и удаление профиля пользователя {{ user.username }}</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+    {% block title %}Редактирование и удаление профиля пользователя {{ user.username }}{% endblock %}
+{% block content %}
+<div class="col d-flex justify-content-center">
+    <div class="card border-success mb-3" style="width: 40rem;">
+      <div class="card-header bg-transparent border-success text-center">
+        Редактирование профиля {{ user.username }}
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          {% bootstrap_button button_type="submit" content="Создать" button_class="btn-success" %}
+        </form>
+      </div>
+        <div class="card-footer"></div>
+    </div>
+  </div>
 
-</body>
-</html>
+{% endblock content %}
