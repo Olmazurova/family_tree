@@ -1,0 +1,10 @@
+<a href="#">{{child}}</a>
+{% if child.children.count %}
+    <ul>
+        {% for child_obj in child.children.all %}
+        <li>
+            {% include 'includes/child.html' with child=child_obj %}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}

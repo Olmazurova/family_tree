@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Min
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
 from django.urls import reverse_lazy
@@ -40,11 +40,11 @@ class TreeDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        old_date = Person.objects.filter(genus_name=context['tree_obj'].id).aggregate(Min('birthday'))
+        ancestor = Person.objects.get(genus_name=context['tree_obj'].id, birthday=old_date['birthday__min'])
         context['trees'] = Tree.objects.filter(linked_tree=context['tree_obj'].id)
-        context['members'] = Person.objects.filter(genus_name=context['object'].id)
+        context['members'] = ancestor
         print(context)
-        for mem in context['members']:
-            print(mem.genus_name)
         return context
 
 
@@ -110,7 +110,6 @@ class PersonDetail(LoginRequiredMixin, DetailView):
         context['person_tree'] = Tree.objects.get(person_id=self.kwargs['id'])
         context['children'] = Person.objects.filter(Q(father=self.kwargs['id']) | Q(mother=self.kwargs['id']))
         print(kwargs['object'])
-        print(context)
         return context
 
 
@@ -167,7 +166,6 @@ class PersonDelete(LoginRequiredMixin, DeleteView):
         instance = get_object_or_404(Person, pk=self.kwargs['id'])
         form = PersonForm(self.request.POST or None, instance=instance)
         context['form'] = form
-        print(context)
         return context
 
 
