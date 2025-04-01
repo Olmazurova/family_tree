@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$a3cal33b-v+05#ttp-a&93f*(%()3i_i4v6_#+kh7r#+dr)h1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'users.apps.UsersConfig',
     'trees.apps.TreesConfig',
+    'pages.apps.PagesConfig',
     'debug_toolbar',
     'django_bootstrap5',
 ]
@@ -152,8 +153,6 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-
-
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_URL = 'login'
@@ -165,3 +164,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 USE_L10N = False
+
+CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'

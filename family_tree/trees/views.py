@@ -207,9 +207,3 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
         person = self.get_object()
         tree = Tree.objects.get(owner=self.request.user.id)
         return person.genus_name == tree.id
-
-
-class RulesView(TemplateView):
-    """Представление страницы правил проекта 'древо Рода'"""
-
-    template_name = 'rules.html'
