@@ -39,6 +39,7 @@ class Tree(models.Model):
         User,
         verbose_name='Владелец',
         on_delete=models.SET(change_owner_or_delete),
+        related_name='tree_owner',
     )
     is_public = models.BooleanField(
         default=False,

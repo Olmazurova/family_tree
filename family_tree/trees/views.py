@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q, Min
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
@@ -31,12 +31,19 @@ class MyTreeList(LoginRequiredMixin, ListView):
         return Tree.objects.filter(owner=self.request.user)
 
 
-class TreeDetail(DetailView):
+class TreeDetail(LoginRequiredMixin, DetailView):
     """Представление подробной информации о древе Рода."""
 
     model = Tree
     template_name = 'trees/tree_detail.html'
     context_object_name = 'tree_obj'
+
+    def get_object(self, queryset=None):
+        obj = Tree.objects.get(slug=self.kwargs['slug'])
+        if obj.owner == self.request.user.id:
+            return obj
+        else:
+            return get_object_or_404(Tree, slug=self.kwargs['slug'], is_public=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -46,6 +53,19 @@ class TreeDetail(DetailView):
         context['members'] = ancestor
         print(context)
         return context
+
+
+class TreeStructure(LoginRequiredMixin, DetailView):
+    model = Tree
+    template_name = 'trees/tree_structure.html'
+    context_object_name = 'tree_obj'
+
+
+class TreeImage(LoginRequiredMixin, DetailView):
+    model = Tree
+    template_name = 'trees/tree_image.html'
+    context_object_name = 'tree_obj'
+
 
 
 class TreeCreate(LoginRequiredMixin, CreateView):
@@ -63,7 +83,7 @@ class TreeCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TreeDelete(DeleteView):
+class TreeDelete(UserPassesTestMixin, DeleteView):
     """Представление удаления древа Рода."""
 
     model = Tree
@@ -77,8 +97,12 @@ class TreeDelete(DeleteView):
         context['form'] = form
         return context
 
+    def test_func(self):
+        obj = self.get_object()
+        return obj.owner == self.request.user.id
 
-class TreeUpdate(UpdateView):
+
+class TreeUpdate(UserPassesTestMixin, UpdateView):
     """Представление редактирования древа Рода."""
 
     model = Tree
@@ -92,6 +116,10 @@ class TreeUpdate(UpdateView):
         form = TreeForm(self.request.POST or None, instance=instance)
         context['form'] = form
         return context
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj.owner == self.request.user.id
 
 
 class PersonDetail(LoginRequiredMixin, DetailView):
@@ -109,11 +137,10 @@ class PersonDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['person_tree'] = Tree.objects.get(person_id=self.kwargs['id'])
         context['children'] = Person.objects.filter(Q(father=self.kwargs['id']) | Q(mother=self.kwargs['id']))
-        print(kwargs['object'])
         return context
 
 
-class PersonCreate(LoginRequiredMixin, CreateView):
+class PersonCreate(UserPassesTestMixin, CreateView):
     """Представление создания нового члена древа Рода."""
 
     model = Person
@@ -129,9 +156,12 @@ class PersonCreate(LoginRequiredMixin, CreateView):
     #     # form.instance.genus_name.set(tree_obj)
     #     return super().form_valid(form)
 
+    def test_func(self):
+        tree = Tree.objects.get(slug=self.kwargs['slug'])
+        return tree.owner == self.request.user.id
 
 
-class PersonUpdate(LoginRequiredMixin, UpdateView):
+class PersonUpdate(UserPassesTestMixin, UpdateView):
     """Представление редактирования члена древа Рода."""
 
     model = Person
@@ -149,8 +179,13 @@ class PersonUpdate(LoginRequiredMixin, UpdateView):
         context['form'] = form
         return context
 
+    def test_func(self):
+        person = self.get_object()
+        tree = Tree.objects.get(owner=self.request.user.id)
+        return person.genus_name == tree.id
 
-class PersonDelete(LoginRequiredMixin, DeleteView):
+
+class PersonDelete(UserPassesTestMixin, DeleteView):
     """Представление удаления члена древа Рода."""
 
     model = Person
@@ -167,6 +202,11 @@ class PersonDelete(LoginRequiredMixin, DeleteView):
         form = PersonForm(self.request.POST or None, instance=instance)
         context['form'] = form
         return context
+
+    def test_func(self):
+        person = self.get_object()
+        tree = Tree.objects.get(owner=self.request.user.id)
+        return person.genus_name == tree.id
 
 
 class RulesView(TemplateView):

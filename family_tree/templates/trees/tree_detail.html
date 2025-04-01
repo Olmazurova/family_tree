@@ -22,6 +22,13 @@
 {#        </article>#}
 {#    {% endfor %}#}
 
+    <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
+      <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_image' tree_obj.slug %}">Показать изображением</a></button>
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_structure' tree_obj.slug %}">Показать структурой</a></button>
+    </div>
+
 <div class="tree">
     <ul>
         <li>
@@ -43,7 +50,7 @@
         </li>
     </ul>
 </div>
-
+{% if user.id == tree_obj.owner %}
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
       <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:person_create' tree_obj.slug %}">Добавить члена родословной</a></button>
@@ -52,6 +59,7 @@
       <button type="button" class="btn btn-danger"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:tree_delete' tree_obj.slug %}">Удалить родословную</a></button>
     </div>
+{% endif %}
 
     <p><b>Связанные родословные:</b></p>
     {% for tree in trees %}

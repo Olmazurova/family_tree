@@ -1,24 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Профиль пользователя {{ user.username }}{% endblock %}
+{% block title %}Профиль пользователя {{ profile_obj.username }}{% endblock %}
 {% block content %}
-    <h2 class="text-center">Информация о пользователе {{ user.username }}</h2>
-    {% if user.photo %}
+    <h2 class="text-center">Информация о пользователе {{ profile_obj.username }}</h2>
+    {% if profile_obj.photo %}
          <div class="col-md-4">
-        <a href="{{ user.photo.url }}" target="_blank">
-          <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ user.photo.url }}">
+        <a href="{{ profile_obj.photo.url }}" target="_blank">
+          <img class="border-3 rounded img-fluid img-thumbnail mb-2 mx-auto d-block" src="{{ profile_obj.photo.url }}">
         </a></div>
       {% endif %}
     <div class="card-body">
-      <p><b>Фамилия: </b>{{ user.last_name }}</p>
-      <p><b>Имя: </b>{{ user.first_name }}</p>
-      <p><b>Дата рождения: </b>{{ user.birthday }}</p><br>
+      <p><b>Фамилия: </b>{{ profile_obj.last_name }}</p>
+      <p><b>Имя: </b>{{ profile_obj.first_name }}</p>
+      <p><b>Дата рождения: </b>{{ profile_obj.birthday }}</p><br>
     </div>
     <div class="card">
-    <b>О себе: </b><p>{{ user.about_oneself }}</p></div><br>
+    <b>О себе: </b><p>{{ profile_obj.about_oneself }}</p></div><br>
 
     <div class="text-center">
         <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'users:profile_edit' %}">Редактировать</a></button>
     </div><br>
+    <div  class="col-6 offset-3 mb-5 lead text-lg-start">
+    <h2 class="text-center">Родословные {{ profile_obj.username }}</h2>
+    {% if not trees_obj %}
+        <p class="text-center">Пользователь {{ profile_obj.username }} пока не создавал(а) родословных.</p>
+    {% else %}
+        {% for tree in trees_obj %}
+            <article class="mb-5">
+          {% include "includes/tree_card.html" %}
+        </article>
+        {% endfor %}
+        {% include "includes/paginator.html" %}
+    {% endif %}
+    </div>
 
 {% endblock content %}
