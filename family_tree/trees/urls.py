@@ -10,7 +10,7 @@ from .views import (
     PersonDetail,
     PersonUpdate,
     TreeImage,
-    TreeStructure
+    TreeStructure, TreeUpdate
 )
 
 app_name = 'trees'
@@ -21,7 +21,7 @@ urlpatterns = [
     path('create/', TreeCreate.as_view(), name='tree_create'),
     path('<str:slug>/', TreeDetail.as_view(), name='tree_detail'),
     path('<str:slug>/delete/', TreeDelete.as_view(), name='tree_delete'),
-    path('<str:slug>/edit/', TreeDelete.as_view(), name='tree_edit'),
+    path('<str:slug>/edit/', TreeUpdate.as_view(), name='tree_edit'),
     path('<str:slug>/structure/', TreeStructure.as_view(), name='tree_structure'),
     path('<str:slug>/image/', TreeImage.as_view(), name='tree_image'),
 

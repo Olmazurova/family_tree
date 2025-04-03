@@ -2,4 +2,54 @@
 {% load django_bootstrap5 %}
 {% block title %}Родословная {{ tree_obj.genus_name }}{% endblock %}
 {% block content %}
+<div class="text-center">Родоначальник
+{{ ancestor }}</div>
+
+    <div class="tree">
+    <ul class="list-group">
+{#    <link rel="stylesheet" href="/css/tree_css.css">#}
+    <li class="list-group ">
+
+    <div class="card-group col-3 text-center top-100 start-50 translate-middle">
+                <div class="card">
+        <a href="{% url 'trees:person' slug=tree_obj.slug id=ancestor.id %}">{{ ancestor.name }} {{ ancestor.surname }}</a>
+        </div>
+                {% if ancestor.spouse %}
+                    <div class="card">
+        <a href="{% url 'trees:person' slug=tree_obj.slug id=ancestor.spouse.id %}">{{ ancestor.spouse.name }} {{ ancestor.spouse.surname }}</a>
+        </div>
+
+    {% endif %}
+    </div>
+    </li>
+
+    {% if ancestor.child.all.count %}
+    <ul class="list-group">
+    {% for kid in ancestor.child.all %}
+        <li class="list-group">
+            <div class="card-group text-center">
+                <div class="card">
+        <a href="{% url 'trees:person' slug=tree_obj.slug id=kid.id %}">{{ kid.name }} {{ kid.surname }}</a>
+        </div>
+                {% if kid.spouse %}
+                    <div class="card">
+        <a href="{% url 'trees:person' slug=tree_obj.slug id=kid.spouse.id %}">{{ kid.spouse.name }} {{ kid.spouse.surname }}</a>
+        </div>
+                {% endif %}
+            </div>
+        {% if kid.child.all.count %}
+            <ul class="list-group list-group-horizontal">
+                {% for child_obj in kid.child.all %}
+                            <li class="list-group">
+                                {% include 'includes/child.html' with baby=child_obj %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+        {% endfor %}
+            </ul>
+        {% endif %}
+    </ul>
+</div>
 {% endblock content %}

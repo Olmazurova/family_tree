@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from .utils import change_owner_or_delete
+from .utils import change_owner_or_delete, get_progenitor
 
 LENGTH_SURNAME = 100
 LENGTH_NAME = 50
@@ -51,6 +51,14 @@ class Tree(models.Model):
         verbose_name='Идентификатор',
         help_text=('Идентификатор страницы для URL; '
                    'разрешены символы латиницы, цифры, дефис и подчёркивание.'),
+        blank=True,
+    )
+    progenitor = models.OneToOneField(
+        'Person',
+        verbose_name='Родоначальник',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='tree_progenitor',
         blank=True,
     )
 
@@ -131,12 +139,12 @@ class Person(models.Model):
         null=True,
         related_name='my_spouse',
     )
-    child = models.ForeignKey(
+    child = models.ManyToManyField(
         'Person',
         blank=True,
         verbose_name='Ребёнок',
-        on_delete=models.SET_NULL,
-        null=True,
+        # on_delete=models.SET_DEFAULT,
+        # default='нет информации',
         related_name='my_child',
     )
 

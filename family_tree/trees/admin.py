@@ -48,12 +48,12 @@ class PersonAdmin(admin.ModelAdmin):
         'birthday',
         'date_of_death',
         'gender',
-        'biography',
+        # 'biography',
         'photo',
         'father',
         'mother',
         'spouse',
-        'child',
+        # 'child',
     )
     list_filter = (
         # 'genus_name',
@@ -73,7 +73,7 @@ class PersonAdmin(admin.ModelAdmin):
         'birthday',
         'date_of_death',
         'gender',
-        'biography',
+        # 'biography',
     )
 
 

@@ -51,7 +51,7 @@
     <h3>Биография:</h3>
     {% if person.biography %}<p>{{ person.biography }}{% else %}Биография пока пуста.{% endif %}</p><br>
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
-    {% if user.id == person_tree.owner %}
+    {% if user == person_tree.owner %}
         <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:person_edit' slug=person_tree.slug id=person.id %}">Редактировать</a></button>
       <button type="button" class="btn btn-danger"><a class="text-decoration-none text-reset"

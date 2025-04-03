@@ -15,12 +15,13 @@
     <p><b>Владелец: </b>
         <a class="text-decoration-none text-reset"
                   href="{% url 'users:profile' tree_obj.owner %}">{{ tree_obj.owner }}</a></p>
-{#    <p><b>Члены рода:</b></p>#}
-{#    {% for person in members %}#}
-{#      <article class="mb-5">#}
-{#          {% include "includes/person_card.html" %}#}
-{#        </article>#}
-{#    {% endfor %}#}
+    <p><b>Члены рода:</b></p>
+    <p><b>Родоначальник - {{ ancestor }}</b></p>
+    {% for person in members %}
+      <article class="mb-5">
+          {% include "includes/person_card.html" %}
+        </article>
+    {% endfor %}
 
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
       <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
@@ -29,28 +30,8 @@
                   href="{% url 'trees:tree_structure' tree_obj.slug %}">Показать структурой</a></button>
     </div>
 
-<div class="tree">
-    <ul>
-        <li>
-            <a href="#">{{ tree_obj.genus_name }}</a>
-            <ul>
-                <li>
-                    <a href="#">{{ members }}</a>
-                    {% if members.children.count %}
-                        <ul>
-                            {% for child_obj in members.children.all %}
-                            <li>
-                                {% include 'includes/child.html' with child=child_obj %}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </li>
-            </ul>
-        </li>
-    </ul>
-</div>
-{% if user.id == tree_obj.owner %}
+<br>
+{% if user == tree_obj.owner %}
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
       <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:person_create' tree_obj.slug %}">Добавить члена родословной</a></button>
@@ -67,5 +48,6 @@
           {% include "includes/tree_card.html" %}
         </article>
     {% endfor %}
-
+<br>
+    <br>
 {% endblock content %}

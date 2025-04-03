@@ -2,57 +2,57 @@
 {% load django_bootstrap5 %}
 {% block title %}
     {% if '/edit/' in request.path %}
-            Редактирование члена родословной
+        Редактирование члена родословной
     {% elif '/delete/' in request.path %}
-            Удаление члена родословной
+        Удаление члена родословной
     {% else %}
-            Добавление члена родословной
+        Добавление члена родословной
     {% endif %}
 {% endblock %}
 {% block content %}
-    <div class="col d-flex justify-content-center">
-    <div class="card border-success mb-3" style="width: 40rem;">
-      <div class="card-header bg-transparent border-success text-center">
-          {% if '/edit/' in request.path %}
-            Редактирование члена родословной {{ person.genus_name.genus_name }}
-          {% elif '/delete/' in request.path %}
-            Удаление члена родословной {{ person.genus_name.genus_name }}
-          {% else %}
-            Добавление члена родословной {{ person.genus_name.genus_name }}
-          {% endif %}
-      </div>
-      <div class="card-body">
-        <form method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-            {% if not '/delete/' in request.path %}
+<div class="col d-flex justify-content-center">
+  <div class="card border-success mb-3" style="width: 40rem">
+    <div class="card-header bg-transparent border-success text-center">
+      {% if '/edit/' in request.path %}
+          Редактирование члена родословной {{ person.genus_name.genus_name }}
+      {% elif '/delete/' in request.path %}
+          Удаление члена родословной {{ person.genus_name.genus_name }}
+      {% else %}
+          Добавление члена родословной {{ person.genus_name.genus_name }}
+      {% endif %}
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+          {% if not '/delete/' in request.path %}
               {% bootstrap_form form %}
               {% if '/edit/' in request.path %}
-                {% bootstrap_button button_type="submit" content="Редактировать" button_class="btn-success" %}
+                  {% bootstrap_button button_type="submit" content="Редактировать" button_class="btn-success" %}
               {% elif '/create/' in request.path %}
-                {% bootstrap_button button_type="submit" content="Создать" button_class="btn-success" %}
+                  {% bootstrap_button button_type="submit" content="Создать" button_class="btn-success" %}
               {% endif %}
-            {% else %}
-        <h2>Информация о {{ person }}</h2>
-    {% if person.photo %}
-        <div class="col-md-4">
-        <a href="{{ person.photo.url }}" target="_blank">
-          <img class="border-3 rounded img-thumbnail img-fluid d-block" src="{{ person.photo.url }}" height="100">
-        </a></div>
-      {% endif %}
-                <p><b>Род: </b>{{ person.genus_name }}</p>
-
-    <p><b>Фамилия: </b>{% if person.surname %}{{ person.surname }}{% else %}неизвестно{% endif %}</p>
-    <p><b>Имя: </b>{% if person.name %}{{ person.name }}{% else %}неизвестно{% endif %}</p>
-    <p><b>Отчество: </b>{% if person.patronymic %}{{ person.patronymic }}{% else %}неизвестно{% endif %}</p><br>
-    <p><b>Дата рождения: </b>{% if person.birthday %}{{ person.birthday }}{% else %}неизвестно{% endif %}</p>
-    <p><b>Дата смерти: </b>{% if person.date_of_death %}{{ person.date_of_death }}{% else %}неизвестно{% endif %}</p>
-    <p><b>Пол: </b>{{ person.gender }}</p><br>
-                {% bootstrap_button button_type="submit" content="Удалить" button_class="btn-danger" %}
-        {% endif %}
-        </form>
-      </div>
-        <div class="card-footer"></div>
+          {% else %}
+              <h2>Информация о {{ person }}</h2>
+              {% if person.photo %}
+                  <div class="col-md-4">
+                      <a href="{{ person.photo.url }}" target="_blank">
+                          <img class="border-3 rounded img-thumbnail img-fluid d-block" src="{{ person.photo.url }}" height="100"/>
+                      </a>
+                  </div>
+              {% endif %}
+              <p><b>Род: </b>{{ person.genus_name }}</p>
+              <p><b>Фамилия: </b>{% if person.surname %}{{ person.surname }}{% else %}неизвестно{% endif %}</p>
+              <p><b>Имя: </b>{% if person.name %}{{ person.name }}{% else %}неизвестно{% endif %}</p>
+              <p><b>Отчество: </b>{% if person.patronymic %}{{ person.patronymic }}{% else %}неизвестно{% endif %}</p>
+              <br />
+              <p><b>Дата рождения: </b>{% if person.birthday %}{{ person.birthday }}{% else %}неизвестно{% endif %}</p>
+              <p><b>Дата смерти: </b>{% if person.date_of_death %}{{ person.date_of_death }}{% else %}неизвестно{% endif %}</p>
+              <p><b>Пол: </b>{{ person.gender }}</p>
+              <br />
+              {% bootstrap_button button_type="submit" content="Удалить" button_class="btn-danger" %} {% endif %}
+      </form>
     </div>
+      <div class="card-footer"></div>
   </div>
-
+</div>
 {% endblock content %}

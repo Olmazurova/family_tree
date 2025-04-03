@@ -47,11 +47,11 @@ class TreeDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        old_date = Person.objects.filter(genus_name=context['tree_obj'].id).aggregate(Min('birthday'))
-        ancestor = Person.objects.get(genus_name=context['tree_obj'].id, birthday=old_date['birthday__min'])
+        # kl = Tree.objects.filter(pogenitor__isnull=False)
+        ancestor = context['tree_obj'].progenitor
         context['trees'] = Tree.objects.filter(linked_tree=context['tree_obj'].id)
-        context['members'] = ancestor
-        print(context)
+        context['members'] = Person.objects.filter(genus_name=context['tree_obj'].id)
+        context['ancestor'] = ancestor
         return context
 
 
@@ -59,6 +59,17 @@ class TreeStructure(LoginRequiredMixin, DetailView):
     model = Tree
     template_name = 'trees/tree_structure.html'
     context_object_name = 'tree_obj'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ancestor = Person.objects.filter(id=context['tree_obj'].progenitor.id).select_related('spouse')
+        context['ancestor'] = ancestor[0]
+        print(ancestor)
+        print(ancestor[0])
+        print(ancestor[0].child.all().count())
+        print(ancestor[0].my_child)
+        print(ancestor[0].my_child.all)
+        return context
 
 
 class TreeImage(LoginRequiredMixin, DetailView):
@@ -119,7 +130,7 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         obj = self.get_object()
-        return obj.owner == self.request.user.id
+        return obj.owner == self.request.user
 
 
 class PersonDetail(LoginRequiredMixin, DetailView):
@@ -148,17 +159,30 @@ class PersonCreate(UserPassesTestMixin, CreateView):
     template_name = 'trees/person_create.html'
     success_url = reverse_lazy('home')
 
-    # def form_valid(self, form):
-    #     new_person = form.instance
-    #     new_person.save()
-    #     new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
-    #     # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
-    #     # form.instance.genus_name.set(tree_obj)
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        new_person = form.instance
+        new_person.save()
+        if new_person.father:
+            father = new_person.father
+            father.child.add(new_person)
+            father.save()
+        if new_person.mother:
+            mother = new_person.mother
+            mother.child.add(new_person)
+            mother.save()
+        if new_person.spouse:
+            spouse = new_person.spouse
+            spouse.spouse = new_person
+            spouse.save()
+
+        # new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
+        # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
+        # form.instance.genus_name.set(tree_obj)
+        return super().form_valid(form)
 
     def test_func(self):
         tree = Tree.objects.get(slug=self.kwargs['slug'])
-        return tree.owner == self.request.user.id
+        return tree.owner == self.request.user
 
 
 class PersonUpdate(UserPassesTestMixin, UpdateView):
@@ -181,8 +205,29 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         person = self.get_object()
-        tree = Tree.objects.get(owner=self.request.user.id)
-        return person.genus_name == tree.id
+        tree = Tree.objects.get(slug=self.kwargs['slug'])
+        return tree.owner == self.request.user and person in tree.person_id.all()
+
+    def form_valid(self, form):
+        new_person = form.instance
+        new_person.save()
+        if new_person.father:
+            father = new_person.father
+            father.my_child.add(new_person)
+            father.save()
+        if new_person.mother:
+            mother = new_person.mother
+            mother.my_child.add(new_person)
+            mother.save()
+        if new_person.spouse:
+            spouse = new_person.spouse
+            spouse.my_spouse.add(new_person)
+            spouse.save()
+
+        # new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
+        # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
+        # form.instance.genus_name.set(tree_obj)
+        return super().form_valid(form)
 
 
 class PersonDelete(UserPassesTestMixin, DeleteView):
