@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Информация о {{ person }}{% endblock %}
 {% block content %}
-    <h2>Информация о {{ person }}</h2>
+    <h2 class="text-center">Информация о {{ person }}</h2>
     {% if person.photo %}
         <div class="col-md-4">
         <a href="{{ person.photo.url }}" target="_blank">
@@ -10,6 +10,7 @@
       {% endif %}
     <p><b>Род: </b><a href="{% url 'trees:tree_detail' person_tree.slug %}" class="text-dark">{{ person_tree }}</a></p>
 
+    <p><b>Поколение: </b>{{ person.level }}</p>
     <p><b>Фамилия: </b>{% if person.surname %}{{ person.surname }}{% else %}неизвестно{% endif %}</p>
     <p><b>Имя: </b>{% if person.name %}{{ person.name }}{% else %}неизвестно{% endif %}</p>
     <p><b>Отчество: </b>{% if person.patronymic %}{{ person.patronymic }}{% else %}неизвестно{% endif %}</p><br>
@@ -38,6 +39,7 @@
         {% else %}неизвестно
         {% endif %}
     </p>
+    <p><b>Дети: </b></p>
     {% if children %}
         <ul>
         {% for child in children %}

@@ -5,12 +5,12 @@
 <div class="text-center">Родоначальник
 {{ ancestor }}</div>
 
-    <div class="tree">
-    <ul class="list-group">
+    <div class="tree text-center">
+    <ul>
 {#    <link rel="stylesheet" href="/css/tree_css.css">#}
-    <li class="list-group ">
+    <li class="list-group">
 
-    <div class="card-group col-3 text-center top-100 start-50 translate-middle">
+    <div class="card-group col-3 text-center">
                 <div class="card">
         <a href="{% url 'trees:person' slug=tree_obj.slug id=ancestor.id %}">{{ ancestor.name }} {{ ancestor.surname }}</a>
         </div>
@@ -24,29 +24,16 @@
     </li>
 
     {% if ancestor.children.all.count %}
-    <ul class="list-group">
+        <div class="text-center col-3">
+        <p>|</p>
+        </div>
+
+    <ul>
+
     {% for kid in ancestor.children.all %}
         <li class="list-group">
-            <div class="card-group text-center">
-                <div class="card">
-        <a href="{% url 'trees:person' slug=tree_obj.slug id=kid.id %}">{{ kid.name }} {{ kid.surname }}</a>
-        </div>
-                {% if kid.spouse %}
-                    <div class="card">
-        <a href="{% url 'trees:person' slug=tree_obj.slug id=kid.spouse.id %}">{{ kid.spouse.name }} {{ kid.spouse.surname }}</a>
-        </div>
-                {% endif %}
-            </div>
-        {% if kid.children.all.count %}
-            <ul class="list-group list-group-horizontal">
-                {% for child_obj in kid.children.all %}
-                            <li class="list-group">
-                                {% include 'includes/child.html' with baby=child_obj %}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </li>
+           {% include 'includes/child.html' with baby=kid %}
+        </li>
         {% endfor %}
             </ul>
         {% endif %}

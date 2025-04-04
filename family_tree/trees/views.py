@@ -7,6 +7,7 @@ from pytils.translit import slugify
 
 from .models import Tree, Person
 from .forms import TreeForm, PersonForm
+from .utils import setting_level
 
 NUMBER_OF_TREES = 10
 
@@ -79,7 +80,7 @@ class TreeCreate(LoginRequiredMixin, CreateView):
 
     model = Tree
     form_class = TreeForm
-    template_name = 'trees/create_tree.html'
+    template_name = 'trees/tree_create.html'
     success_url = reverse_lazy('home')
 
     def form_valid(self, form):
@@ -93,7 +94,7 @@ class TreeDelete(UserPassesTestMixin, DeleteView):
     """Представление удаления древа Рода."""
 
     model = Tree
-    template_name = 'trees/create_tree.html'
+    template_name = 'trees/tree_create.html'
     success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
@@ -113,7 +114,7 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
 
     model = Tree
     form_class = TreeForm
-    template_name = 'trees/create_tree.html'
+    template_name = 'trees/tree_create.html'
     success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
@@ -153,6 +154,7 @@ class PersonCreate(UserPassesTestMixin, CreateView):
     form_class = PersonForm
     template_name = 'trees/person_create.html'
     success_url = reverse_lazy('home')
+    context_object_name = 'person'
 
     def form_valid(self, form):
         new_person = form.instance
@@ -163,18 +165,9 @@ class PersonCreate(UserPassesTestMixin, CreateView):
             spouse.spouse = new_person
             spouse.save()
 
-        generation = Person.objects.aggregate(Min('level', default=0))
-        if new_person.parents:
-            new_person.level = new_person.parents.level + 1
-        elif new_person.spouse:
-            new_person.level = new_person.spouse.level
-        else:
-            new_person.level = generation
-        new_person.save()
+        tree = Tree.objects.get(slug=self.kwargs['slug'])
+        setting_level(new_person, tree)
 
-        # new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
-        # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
-        # form.instance.genus_name.set(tree_obj)
         return super().form_valid(form)
 
     def test_func(self):
@@ -214,19 +207,9 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
             spouse.my_spouse.add(new_person)
             spouse.save()
 
-        generation = Person.objects.aggregate(Min('level', default=0))
-        if new_person.parents.all().count():
-            print(new_person.parents.first())
-            new_person.level = (new_person.parents.first().level or 0) + 1
-        elif new_person.spouse:
-            new_person.level = new_person.spouse.level
-        else:
-            new_person.level = generation['level__min']
-        new_person.save()
+        tree = Tree.objects.get(slug=self.kwargs['slug'])
+        setting_level(new_person, tree)
 
-        # new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
-        # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
-        # form.instance.genus_name.set(tree_obj)
         return super().form_valid(form)
 
 

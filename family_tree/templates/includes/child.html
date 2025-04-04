@@ -1,4 +1,4 @@
-<div class="card-group text-center">
+<div class="card-group col-3 text-center">
                 <div class="card">
         <a href="{% url 'trees:person' slug=tree_obj.slug id=baby.id %}">{{ baby.name }} {{ baby.surname }}</a>
         </div>
@@ -9,8 +9,11 @@
                 {% endif %}
             </div>
 {% if baby.children.all.count %}
-    <ul class="list-group list-group-horizontal">
-        {% for child_obj in baby.children.all.count %}
+    <div class="text-center col-3">
+        <p>|</p>
+        </div>
+    <ul>
+        {% for child_obj in baby.children.all %}
         <li class="list-group">
             {% include 'includes/child.html' with baby=child_obj %}
         </li>

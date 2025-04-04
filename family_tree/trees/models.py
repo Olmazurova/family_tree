@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from .utils import change_owner_or_delete, get_progenitor
 
 LENGTH_SURNAME = 100
 LENGTH_NAME = 50
@@ -38,7 +37,7 @@ class Tree(models.Model):
     owner = models.ForeignKey(
         User,
         verbose_name='Владелец',
-        on_delete=models.SET(change_owner_or_delete),
+        on_delete=models.DO_NOTHING,
         related_name='tree_owner',
     )
     is_public = models.BooleanField(
