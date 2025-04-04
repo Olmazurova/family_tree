@@ -34,10 +34,8 @@ class PersonForm(forms.ModelForm):
             'gender',
             'biography',
             'photo',
-            'father',
-            'mother',
+            'parents',
             'spouse',
-            'child',
         )
         widgets = {
             'birthday': forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'}),

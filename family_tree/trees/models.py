@@ -115,22 +115,16 @@ class Person(models.Model):
         blank=True,
         upload_to='person_photo',
     )
-    father = models.ForeignKey(
+    parents = models.ManyToManyField(
         'self',
         blank=True,
-        verbose_name='Отец',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='my_father',
+        verbose_name='Родители',
+        related_name='children',
+        symmetrical=False,
+        default='Неизвестно',
+        help_text='Чтобы отменить выбранного человека: ctrl + нажмите имя человека.'
     )
-    mother = models.ForeignKey(
-        'Person',
-        blank=True,
-        verbose_name='Мать',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='my_mother',
-    )
+
     spouse = models.ForeignKey(
         'Person',
         blank=True,
@@ -138,14 +132,11 @@ class Person(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='my_spouse',
+        help_text='Чтобы отменить выбранного человека: ctrl + нажмите имя человека.'
     )
-    child = models.ManyToManyField(
-        'Person',
-        blank=True,
-        verbose_name='Ребёнок',
-        # on_delete=models.SET_DEFAULT,
-        # default='нет информации',
-        related_name='my_child',
+    level = models.SmallIntegerField(
+        'Поколение',
+        null=True,
     )
 
     class Meta:

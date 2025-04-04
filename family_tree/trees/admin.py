@@ -50,8 +50,7 @@ class PersonAdmin(admin.ModelAdmin):
         'gender',
         # 'biography',
         'photo',
-        'father',
-        'mother',
+        # 'parents',
         'spouse',
         # 'child',
     )

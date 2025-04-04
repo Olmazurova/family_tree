@@ -64,11 +64,6 @@ class TreeStructure(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         ancestor = Person.objects.filter(id=context['tree_obj'].progenitor.id).select_related('spouse')
         context['ancestor'] = ancestor[0]
-        print(ancestor)
-        print(ancestor[0])
-        print(ancestor[0].child.all().count())
-        print(ancestor[0].my_child)
-        print(ancestor[0].my_child.all)
         return context
 
 
@@ -147,7 +142,7 @@ class PersonDetail(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['person_tree'] = Tree.objects.get(person_id=self.kwargs['id'])
-        context['children'] = Person.objects.filter(Q(father=self.kwargs['id']) | Q(mother=self.kwargs['id']))
+        context['children'] = self.get_object().children.all()
         return context
 
 
@@ -162,18 +157,20 @@ class PersonCreate(UserPassesTestMixin, CreateView):
     def form_valid(self, form):
         new_person = form.instance
         new_person.save()
-        if new_person.father:
-            father = new_person.father
-            father.child.add(new_person)
-            father.save()
-        if new_person.mother:
-            mother = new_person.mother
-            mother.child.add(new_person)
-            mother.save()
+
         if new_person.spouse:
             spouse = new_person.spouse
             spouse.spouse = new_person
             spouse.save()
+
+        generation = Person.objects.aggregate(Min('level', default=0))
+        if new_person.parents:
+            new_person.level = new_person.parents.level + 1
+        elif new_person.spouse:
+            new_person.level = new_person.spouse.level
+        else:
+            new_person.level = generation
+        new_person.save()
 
         # new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
         # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id
@@ -211,18 +208,21 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
     def form_valid(self, form):
         new_person = form.instance
         new_person.save()
-        if new_person.father:
-            father = new_person.father
-            father.my_child.add(new_person)
-            father.save()
-        if new_person.mother:
-            mother = new_person.mother
-            mother.my_child.add(new_person)
-            mother.save()
+
         if new_person.spouse:
             spouse = new_person.spouse
             spouse.my_spouse.add(new_person)
             spouse.save()
+
+        generation = Person.objects.aggregate(Min('level', default=0))
+        if new_person.parents.all().count():
+            print(new_person.parents.first())
+            new_person.level = (new_person.parents.first().level or 0) + 1
+        elif new_person.spouse:
+            new_person.level = new_person.spouse.level
+        else:
+            new_person.level = generation['level__min']
+        new_person.save()
 
         # new_person.genus_name = Tree.objects.get(slug=self.kwargs['slug']).id
         # tree_obj = Tree.objects.get(slug=self.kwargs['slug']).id

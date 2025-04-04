@@ -23,9 +23,9 @@
     </div>
     </li>
 
-    {% if ancestor.child.all.count %}
+    {% if ancestor.children.all.count %}
     <ul class="list-group">
-    {% for kid in ancestor.child.all %}
+    {% for kid in ancestor.children.all %}
         <li class="list-group">
             <div class="card-group text-center">
                 <div class="card">
@@ -37,9 +37,9 @@
         </div>
                 {% endif %}
             </div>
-        {% if kid.child.all.count %}
+        {% if kid.children.all.count %}
             <ul class="list-group list-group-horizontal">
-                {% for child_obj in kid.child.all %}
+                {% for child_obj in kid.children.all %}
                             <li class="list-group">
                                 {% include 'includes/child.html' with baby=child_obj %}
                             </li>

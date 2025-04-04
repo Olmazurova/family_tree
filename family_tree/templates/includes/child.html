@@ -8,9 +8,9 @@
         </div>
                 {% endif %}
             </div>
-{% if baby.child.all.count %}
+{% if baby.children.all.count %}
     <ul class="list-group list-group-horizontal">
-        {% for child_obj in baby.child.all.count %}
+        {% for child_obj in baby.children.all.count %}
         <li class="list-group">
             {% include 'includes/child.html' with baby=child_obj %}
         </li>

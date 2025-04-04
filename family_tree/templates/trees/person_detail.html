@@ -16,18 +16,22 @@
     <p><b>Дата рождения: </b>{% if person.birthday %}{{ person.birthday }}{% else %}неизвестно{% endif %}</p>
     <p><b>Дата смерти: </b>{% if person.date_of_death %}{{ person.date_of_death }}{% else %}неизвестно{% endif %}</p>
     <p><b>Пол: </b>{{ person.gender }}</p><br>
-    <p><b>Отец: </b>
-        {% if person.father %}
-            <a href="{% url 'trees:person' slug=person_tree.slug id=person.father.id %}" class="text-dark">{{ person.father }}</a>
-        {% else %}неизвестно
-        {% endif %}
-    </p>
-    <p><b>Мать: </b>
-        {% if person.mother %}
-            <a href="{% url 'trees:person' slug=person_tree.slug id=person.mother.id %}" class="text-dark">{{ person.mother }}</a>
-        {% else %}неизвестно
-        {% endif %}
-    </p>
+    <p><b>Родители: </b></p>
+        {% if person.parents %}
+        <ul>
+        {% for parent in person.parents.all %}
+            {% if parent.gender == 'м' %}
+                <li>Отец - {{ parent }}</li>
+            {% else %}
+                <li>Мать - {{ parent }}</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+{#    <br>#}
+       {% else %}
+           <p>Информации о родителях нет.</p>
+       {% endif %}
+
     <p><b>Супруг(а): </b>
         {% if person.spouse %}
             <a href="{% url 'trees:person' slug=person_tree.slug id=person.spouse.id %}" class="text-dark">{{ person.spouse }}</a>
