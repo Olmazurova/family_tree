@@ -2,8 +2,7 @@
 {% load django_bootstrap5 %}
 {% block title %}Родословная {{ tree_obj.genus_name }}{% endblock %}
 {% block content %}
-<div class="text-center">Родоначальник
-{{ ancestor }}</div>
+    <div class="text-center">Родословная <b>{{ tree_obj.genus_name }}</b></div>
 
     <div class="tree text-center">
     <ul>
@@ -39,4 +38,16 @@
         {% endif %}
     </ul>
 </div>
+    <br>
+<div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
+    {% if user == tree_obj.owner %}
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_edit' slug=tree_obj.slug %}">Редактировать древо</a></button>
+      <button type="button" class="btn btn-danger"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_delete' slug=tree_obj.slug %}">Удалить древо</a></button>
+        {% endif %}
+        <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
+                  href="{% url 'trees:tree_detail' slug=tree_obj.slug %}">Вернуться к описанию рода</a></button>
+    </div><br>
+
 {% endblock content %}
