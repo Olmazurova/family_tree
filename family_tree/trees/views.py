@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q, Min
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from pytils.translit import slugify
 
 from .models import Tree, Person
@@ -81,7 +81,7 @@ class TreeCreate(LoginRequiredMixin, CreateView):
     model = Tree
     form_class = TreeForm
     template_name = 'trees/tree_create.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('trees:tree_list')
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -95,7 +95,7 @@ class TreeDelete(UserPassesTestMixin, DeleteView):
 
     model = Tree
     template_name = 'trees/tree_create.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('trees:tree_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -128,6 +128,9 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
         obj = self.get_object()
         return obj.owner == self.request.user
 
+    def get_success_url(self):
+        return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
+
 
 class PersonDetail(LoginRequiredMixin, DetailView):
     """Представление подробной информации о члене древа Рода."""
@@ -153,7 +156,6 @@ class PersonCreate(UserPassesTestMixin, CreateView):
     model = Person
     form_class = PersonForm
     template_name = 'trees/person_create.html'
-    success_url = reverse_lazy('home')
     context_object_name = 'person'
 
     def form_valid(self, form):
@@ -174,6 +176,9 @@ class PersonCreate(UserPassesTestMixin, CreateView):
         tree = Tree.objects.get(slug=self.kwargs['slug'])
         return tree.owner == self.request.user
 
+    def get_success_url(self):
+        return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
+
 
 class PersonUpdate(UserPassesTestMixin, UpdateView):
     """Представление редактирования члена древа Рода."""
@@ -181,7 +186,6 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
     model = Person
     form_class = PersonForm
     template_name = 'trees/person_create.html'
-    success_url = reverse_lazy('home')
 
     def get_object(self, queryset=None):
         return get_object_or_404(Person, id=self.kwargs['id'])
@@ -212,13 +216,15 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
 
         return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
+
 
 class PersonDelete(UserPassesTestMixin, DeleteView):
     """Представление удаления члена древа Рода."""
 
     model = Person
     template_name = 'trees/person_create.html'
-    success_url = reverse_lazy('home')
 
     def get_object(self, queryset =None):
         return get_object_or_404(Person, id=self.kwargs['id'])
@@ -235,3 +241,6 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
         person = self.get_object()
         tree = Tree.objects.get(owner=self.request.user.id)
         return person.genus_name == tree.id
+
+    def get_success_url(self):
+        return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
