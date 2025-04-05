@@ -15,11 +15,12 @@
     </div>
     <div class="card">
     <b>О себе: </b><p>{{ profile_obj.about_oneself }}</p></div><br>
-
+    {% if user == profile_obj %}
     <div class="text-center">
         <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'users:profile_edit' %}">Редактировать</a></button>
     </div><br>
+    {% endif %}
     <div  class="col-6 offset-3 mb-5 lead text-lg-start">
     <h2 class="text-center">Родословные {{ profile_obj.username }}</h2>
     {% if not trees_obj %}

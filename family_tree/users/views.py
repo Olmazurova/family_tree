@@ -39,7 +39,7 @@ class UserProfileDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class UserProfileUpdate(LoginRequiredMixin, UpdateView):
+class UserProfileUpdate(UserPassesTestMixin, UpdateView):
     """Представление редактирования профиля пользователя."""
 
     model = User
@@ -56,6 +56,13 @@ class UserProfileUpdate(LoginRequiredMixin, UpdateView):
         form = UserEditForm(self.request.POST or None, instance=instance)
         context['form'] = form
         return context
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj == self.request.user
+
+    def handle_no_permission(self):
+        return redirect(self.get_success_url())
 
 
 class UserProfileLogout(TemplateView):

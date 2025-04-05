@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q, Min
-from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
 from django.urls import reverse, reverse_lazy
 from pytils.translit import slugify
@@ -48,7 +48,6 @@ class TreeDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # kl = Tree.objects.filter(pogenitor__isnull=False)
         ancestor = context['tree_obj'].progenitor
         context['trees'] = Tree.objects.filter(linked_tree=context['tree_obj'].id)
         context['members'] = Person.objects.filter(genus_name=context['tree_obj'].id)
@@ -108,6 +107,9 @@ class TreeDelete(UserPassesTestMixin, DeleteView):
         obj = self.get_object()
         return obj.owner == self.request.user.id
 
+    def handle_no_permission(self):
+        return redirect(self.get_success_url())
+
 
 class TreeUpdate(UserPassesTestMixin, UpdateView):
     """Представление редактирования древа Рода."""
@@ -130,6 +132,9 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
+
+    def handle_no_permission(self):
+        return redirect(self.get_success_url())
 
 
 class PersonDetail(LoginRequiredMixin, DetailView):
@@ -179,6 +184,9 @@ class PersonCreate(UserPassesTestMixin, CreateView):
     def get_success_url(self):
         return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
 
+    def handle_no_permission(self):
+        return redirect(self.get_success_url())
+
 
 class PersonUpdate(UserPassesTestMixin, UpdateView):
     """Представление редактирования члена древа Рода."""
@@ -219,6 +227,9 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
 
+    def handle_no_permission(self):
+        return redirect(self.get_success_url())
+
 
 class PersonDelete(UserPassesTestMixin, DeleteView):
     """Представление удаления члена древа Рода."""
@@ -244,3 +255,6 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
+
+    def handle_no_permission(self):
+        return redirect(self.get_success_url())
