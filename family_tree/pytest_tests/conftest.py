@@ -40,20 +40,53 @@ def public_tree(author_tree):
 
 
 @pytest.fixture
-def member_tree(public_tree):
+def member_public_tree(public_tree):
     person = Person.objects.create(
-        # genus_name=public_tree,
         surname='Иванов',
         name='Михаил',
         gender='м',
     )
     person.genus_name.add(public_tree)
+    person.save()
+    public_tree.progenitor = person
+    public_tree.save()
     return person
 
 
 @pytest.fixture
+def non_public_tree(author_tree):
+    return Tree.objects.create(
+        genus_name='Закрытая родословная',
+        owner=author_tree,
+        slug='zakr_rodoslovnaya',
+        is_public=False,
+    )
+
+
+@pytest.fixture
+def member_non_public_tree(non_public_tree):
+    person = Person.objects.create(
+        surname='Сидорова',
+        name='Людмила',
+        gender='ж',
+    )
+    person.genus_name.add(non_public_tree)
+    person.save()
+    non_public_tree.progenitor = person
+    non_public_tree.save()
+    return person
+
+
+# Фикстуры для создания url
+
+@pytest.fixture
 def url_tree_detail(public_tree):
     return reverse('trees:tree_detail', args=(public_tree.slug,))
+
+
+@pytest.fixture
+def url_non_public_tree_detail(non_public_tree):
+    return reverse('trees:tree_detail', args=(non_public_tree.slug,))
 
 
 @pytest.fixture
@@ -67,8 +100,13 @@ def url_tree_delete(public_tree):
 
 
 @pytest.fixture
-def url_tree_structure(public_tree):
+def url_tree_structure(public_tree, member_public_tree):
     return reverse('trees:tree_structure', args=(public_tree.slug,))
+
+
+@pytest.fixture
+def url_non_public_tree_structure(non_public_tree, member_non_public_tree):
+    return reverse('trees:tree_structure', args=(non_public_tree.slug,))
 
 
 @pytest.fixture
@@ -77,18 +115,23 @@ def url_person_create(public_tree):
 
 
 @pytest.fixture
-def url_person_detail(public_tree, member_tree):
-    return reverse('trees:person', args=(public_tree.slug, member_tree.id))
+def url_person_detail(public_tree, member_public_tree):
+    return reverse('trees:person', args=(public_tree.slug, member_public_tree.id))
 
 
 @pytest.fixture
-def url_person_edit(public_tree, member_tree):
-    return reverse('trees:person_edit', args=(public_tree.slug, member_tree.id))
+def url_non_public_person_detail(non_public_tree, member_non_public_tree):
+    return reverse('trees:person', args=(non_public_tree.slug, member_non_public_tree.id))
 
 
 @pytest.fixture
-def url_person_delete(public_tree, member_tree):
-    return reverse('trees:person_delete', args=(public_tree.slug, member_tree.id))
+def url_person_edit(public_tree, member_public_tree):
+    return reverse('trees:person_edit', args=(public_tree.slug, member_public_tree.id))
+
+
+@pytest.fixture
+def url_person_delete(public_tree, member_public_tree):
+    return reverse('trees:person_delete', args=(public_tree.slug, member_public_tree.id))
 
 
 @pytest.fixture

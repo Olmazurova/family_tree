@@ -41,7 +41,7 @@ class TreeDetail(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         obj = Tree.objects.get(slug=self.kwargs['slug'])
-        if obj.owner == self.request.user.id:
+        if obj.owner == self.request.user:
             return obj
         else:
             return get_object_or_404(Tree, slug=self.kwargs['slug'], is_public=True)
@@ -96,16 +96,12 @@ class TreeDelete(UserPassesTestMixin, DeleteView):
     template_name = 'trees/tree_create.html'
     success_url = reverse_lazy('trees:tree_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        instance = get_object_or_404(Tree, slug=self.kwargs['slug'])
-        form = TreeForm(self.request.POST or None, instance=instance)
-        context['form'] = form
-        return context
+    def get_object(self, queryset=None):
+        return get_object_or_404(Tree, slug=self.kwargs['slug'])
 
     def test_func(self):
         obj = self.get_object()
-        return obj.owner == self.request.user.id
+        return obj.owner == self.request.user
 
     def handle_no_permission(self):
         return redirect(self.get_success_url())
@@ -117,7 +113,6 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
     model = Tree
     form_class = TreeForm
     template_name = 'trees/tree_create.html'
-    success_url = reverse_lazy('home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
