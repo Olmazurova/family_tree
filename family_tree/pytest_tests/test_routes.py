@@ -6,14 +6,9 @@ from pytest_lazy_fixtures import lf
 
 from family_tree.pytest_tests.conftest import public_tree, member_public_tree, another_user, author_tree_client
 
-URL_HOME = reverse_lazy('home')
-URL_LOGIN = reverse_lazy('login')
-URL_REG = reverse_lazy('registration')
-URL_RULES = reverse_lazy('rules')
-URL_TREE_LIST = reverse_lazy('trees:tree_list')
-URL_TREE_CREATE = reverse_lazy('trees:tree_create')
-URL_USER_EDIT = reverse_lazy('users:profile_edit')
-URL_USER_LOGOUT = reverse_lazy('users:profile_logout')
+from .conftest import (
+    URL_HOME, URL_REG, URL_LOGIN, URL_RULES, URL_TREE_CREATE, URL_TREE_LIST, URL_USER_LOGOUT, URL_USER_EDIT
+)
 
 
 @pytest.mark.django_db

@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q, Min
-from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
 from django.urls import reverse, reverse_lazy
 from pytils.translit import slugify
@@ -9,14 +9,12 @@ from .models import Tree, Person
 from .forms import TreeForm, PersonForm
 from .utils import setting_level
 
-NUMBER_OF_TREES = 10
-
 
 class HomeView(ListView):
     """Представление главной страницы сайта."""
 
     model = Tree
-    paginate_by = NUMBER_OF_TREES
+    paginate_by = settings.ITEMS_COUNT_OF_PAGE
     template_name = 'trees/home.html'
     queryset = Tree.objects.filter(is_public=True)
 
@@ -25,7 +23,7 @@ class MyTreeList(LoginRequiredMixin, ListView):
     """Представление списка древ Рода, владельцем которых являтеся пользователь."""
 
     model = Tree
-    paginate_by = NUMBER_OF_TREES
+    paginate_by = settings.ITEMS_COUNT_OF_PAGE
     template_name = 'trees/list.html'
 
     def get_queryset(self):

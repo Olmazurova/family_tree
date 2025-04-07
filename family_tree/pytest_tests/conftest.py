@@ -1,9 +1,22 @@
 import pytest
+import sqlite3
+from django.conf import settings
 from django.test.client import Client
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from trees.models import Tree, Person
 
+URL_HOME = reverse_lazy('home')
+URL_LOGIN = reverse_lazy('login')
+URL_REG = reverse_lazy('registration')
+URL_RULES = reverse_lazy('rules')
+URL_TREE_LIST = reverse_lazy('trees:tree_list')
+URL_TREE_CREATE = reverse_lazy('trees:tree_create')
+URL_USER_EDIT = reverse_lazy('users:profile_edit')
+URL_USER_LOGOUT = reverse_lazy('users:profile_logout')
+
+
+# фикстуры юзеров и клиентов
 
 @pytest.fixture
 def another_user(django_user_model):
@@ -28,6 +41,8 @@ def author_tree_client(author_tree):
     client.force_login(author_tree)
     return client
 
+
+# фикстуры родословных и их членов
 
 @pytest.fixture
 def public_tree(author_tree):
@@ -75,6 +90,30 @@ def member_non_public_tree(non_public_tree):
     non_public_tree.progenitor = person
     non_public_tree.save()
     return person
+
+
+@pytest.fixture
+def lots_of_trees(author_tree):
+    for i in range(settings.ITEMS_COUNT_OF_PAGE + 1):
+        tree = Tree.objects.create(
+            genus_name=f'Родословная № {i}',
+            owner=author_tree,
+            slug=f'rodoslovnaya_{i}',
+            is_public=True,
+        )
+        tree.save()
+
+
+@pytest.fixture
+def lots_of_members(author_tree, public_tree):
+    for i in range(settings.ITEMS_COUNT_OF_PAGE + 1):
+        person = Person.objects.create(
+            surname=f'Фамилия {i}',
+            name=f'Имя {i}',
+            gender='м' if i // 2 == 0 else 'ж',
+        )
+        person.genus_name.add(public_tree)
+        person.save()
 
 
 # Фикстуры для создания url
