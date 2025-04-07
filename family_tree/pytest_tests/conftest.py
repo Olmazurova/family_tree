@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 import pytest
 import sqlite3
 from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 
 from trees.models import Tree, Person
 
@@ -106,11 +109,13 @@ def lots_of_trees(author_tree):
 
 @pytest.fixture
 def lots_of_members(author_tree, public_tree):
+    now = timezone.now()
     for i in range(settings.ITEMS_COUNT_OF_PAGE + 1):
         person = Person.objects.create(
             surname=f'Фамилия {i}',
             name=f'Имя {i}',
             gender='м' if i // 2 == 0 else 'ж',
+            birthday=now - timedelta(days=i * 30)
         )
         person.genus_name.add(public_tree)
         person.save()

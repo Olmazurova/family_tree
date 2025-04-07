@@ -25,9 +25,31 @@ def test_page_pagination(url, key, author_tree_client):
 
 
 # тесты сортировки
-def
+
+@pytest.mark.usefixtures('lots_of_trees')
+@pytest.mark.parametrize(
+    'url',
+    (
+            URL_HOME,
+            URL_TREE_LIST,
+    )
+)
+def test_order_trees_on_page(url, author_tree_client):
+    """Проверка порядка вывода родословных на странице."""
+    response = author_tree_client.get(url)
+    response_items_list = [tree.created_at for tree in response.context['object_list']]
+    expected_items_list = sorted(response_items_list)
+    assert response_items_list == expected_items_list
+
+
+@pytest.mark.usefixtures('lots_of_members')
+def test_order_members_on_page(url_tree_detail, author_tree_client):
+    """Проверка порядка вывода членов родословной на странице."""
+    response = author_tree_client.get(url_tree_detail)
+    response_items_list = [member.birthday for member in response.context['members']]
+    expected_items_list = sorted(response_items_list)
+    assert response_items_list == expected_items_list
+
 # тесты медиа
 
 # тесты вывода данных
-def test():
-    pass
