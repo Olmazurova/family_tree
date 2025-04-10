@@ -2,7 +2,10 @@ import pytest
 from pytest_lazy_fixtures import lf
 from django.conf import settings
 
-from .conftest import URL_HOME, URL_TREE_LIST
+from .conftest import URL_HOME, URL_TREE_LIST, another_user_client, url_person_detail
+
+IMAGE_FILE = 'test_image.jpg'
+
 
 # тесты формы
 
@@ -51,5 +54,19 @@ def test_order_members_on_page(url_tree_detail, author_tree_client):
     assert response_items_list == expected_items_list
 
 # тесты медиа
+@pytest.mark.parametrize(
+    'url',
+    (lf('url_person_detail'), lf('url_person_delete'))
+)
+def test_has_image_on_pages_person(url, another_user_client):
+    """Проверка вывода фото члена родословной на страницы."""
+    expected_url = f'{settings.MEDIA_URL}{IMAGE_FILE}'
+    response = another_user_client.get(url)
+    image = response.context.get('person').photo
+    assert image.url == expected_url
+    with open(expected_url) as expected_image:
+        assert image == expected_image
+
+
 
 # тесты вывода данных

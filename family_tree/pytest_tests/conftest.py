@@ -9,6 +9,8 @@ from django.utils import timezone
 
 from trees.models import Tree, Person
 
+IMAGE_FILE = 'test_image.jpg'
+
 URL_HOME = reverse_lazy('home')
 URL_LOGIN = reverse_lazy('login')
 URL_REG = reverse_lazy('registration')
@@ -63,6 +65,7 @@ def member_public_tree(public_tree):
         surname='Иванов',
         name='Михаил',
         gender='м',
+        photo=IMAGE_FILE,
     )
     person.genus_name.add(public_tree)
     person.save()
