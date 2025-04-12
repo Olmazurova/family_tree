@@ -5,8 +5,7 @@ from PIL import Image
 from pytest_lazy_fixtures import lf
 from django.conf import settings
 
-from .conftest import URL_HOME, URL_TREE_LIST, URL_TREE_CREATE, \
-    url_person_detail, author_tree_client
+from .conftest import URL_HOME, URL_TREE_LIST, URL_TREE_CREATE
 from trees.forms import TreeForm, PersonForm
 
 IMAGE_FILE = 'test_image.jpg'
@@ -149,3 +148,12 @@ def test_displaying_form_on_pages(url, form_type, author_tree_client):
     response = author_tree_client.get(url)
     assert 'form' in response.context
     assert isinstance(response.context['form'], form_type)
+
+@pytest.mark.parametrize(
+    'url',
+    (lf('url_tree_delete'), lf('url_person_delete'))
+)
+def test_absence_form_on_pages(url, author_tree_client):
+    """Проверяет отсутствие отображения формы на страницах."""
+    response = author_tree_client.get(url)
+    assert 'form' not in response.context
