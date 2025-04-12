@@ -243,7 +243,7 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         person = self.get_object()
-        tree = Tree.objects.get(owner=self.request.user.id)
+        tree = Tree.objects.get(owner=self.request.user)
         return person.genus_name == tree.id
 
     def get_success_url(self):

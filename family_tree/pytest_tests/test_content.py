@@ -1,4 +1,7 @@
+from pprint import pprint
+
 import pytest
+from PIL import Image
 from pytest_lazy_fixtures import lf
 from django.conf import settings
 
@@ -54,18 +57,19 @@ def test_order_members_on_page(url_tree_detail, author_tree_client):
     assert response_items_list == expected_items_list
 
 # тесты медиа
+@pytest.mark.usefixtures('public_tree', 'author_tree', 'member_public_tree')
 @pytest.mark.parametrize(
     'url',
     (lf('url_person_detail'), lf('url_person_delete'))
 )
-def test_has_image_on_pages_person(url, another_user_client):
+def test_has_image_on_pages_person(url, author_tree_client):
     """Проверка вывода фото члена родословной на страницы."""
     expected_url = f'{settings.MEDIA_URL}{IMAGE_FILE}'
-    response = another_user_client.get(url)
-    image = response.context.get('person').photo
-    assert image.url == expected_url
-    with open(expected_url) as expected_image:
-        assert image == expected_image
+    print(expected_url)
+    response = author_tree_client.get(url)
+    image_url = response.context['person'].photo.url
+    print(response.context['object'].photo)
+    assert image_url == expected_url
 
 
 
