@@ -5,12 +5,12 @@ from PIL import Image
 from pytest_lazy_fixtures import lf
 from django.conf import settings
 
-from .conftest import URL_HOME, URL_TREE_LIST, another_user_client, url_person_detail
+from .conftest import URL_HOME, URL_TREE_LIST, URL_TREE_CREATE, \
+    url_person_detail, author_tree_client
+from trees.forms import TreeForm, PersonForm
 
 IMAGE_FILE = 'test_image.jpg'
 
-
-# тесты формы
 
 # тесты пагинации
 
@@ -56,6 +56,7 @@ def test_order_members_on_page(url_tree_detail, author_tree_client):
     expected_items_list = sorted(response_items_list)
     assert response_items_list == expected_items_list
 
+
 # тесты медиа
 @pytest.mark.usefixtures('public_tree', 'author_tree', 'member_public_tree')
 @pytest.mark.parametrize(
@@ -72,5 +73,79 @@ def test_has_image_on_pages_person(url, author_tree_client):
     assert image_url == expected_url
 
 
-
 # тесты вывода данных
+@pytest.mark.parametrize(
+    'url, tree_or_member, key_list, show_tree',
+    (
+            (URL_HOME, lf('public_tree'), 'object_list', True),
+            (URL_HOME, lf('non_public_tree'), 'object_list', False),
+            (lf('url_tree_detail'), lf('linked_public_tree'), 'trees', True),
+            (lf('url_tree_detail'), lf('member_public_tree'), 'members', True),
+            (URL_TREE_LIST, lf('public_tree'), 'object_list', True),
+            (URL_TREE_LIST, lf('non_public_tree'), 'object_list', True),
+    )
+)
+def test_tree_or_member_in_list_page(
+        url,
+        tree_or_member,
+        key_list,
+        show_tree,
+        author_tree_client,
+        public_tree
+):
+    """Проверка наличия (отсутствия) древа или члена рода в списке на странице."""
+    response = author_tree_client.get(url)
+    object_list = response.context[key_list]
+    assert (tree_or_member in object_list) is show_tree
+
+
+def test_unavailable_other_trees_in_my_list(
+        another_user_client,
+        public_tree,
+        non_public_tree
+):
+    """Проверка недоступности чужих родословных в списке родословных пользователя."""
+    response = another_user_client.get(URL_TREE_LIST)
+    object_list = response.context.get('object_list')
+    assert public_tree not in object_list
+    assert non_public_tree not in object_list
+
+
+@pytest.mark.parametrize(
+    'url, expected_info, key_context',
+    (
+            (lf('url_tree_detail'), lf('public_tree'), 'tree_obj'),
+            (lf('url_person_detail'), lf('member_public_tree'), 'person'),
+            (lf('url_tree_structure'), lf('member_public_tree'), 'ancestor'),
+            (lf('url_person_delete'), lf('member_public_tree'), 'person'),
+            (lf('url_tree_delete'), lf('public_tree'), 'tree')
+    )
+)
+def test_correct_output_information_on_pages(
+        url,
+        expected_info,
+        key_context,
+        author_tree_client
+):
+    """Проверка, что на страницу передаётся ожидаемая информация."""
+    response = author_tree_client.get(url)
+    received_information = response.context.get(key_context)
+    assert received_information == expected_info
+
+
+# тесты формы
+
+@pytest.mark.parametrize(
+    'url, form_type',
+    (
+            (URL_TREE_CREATE, TreeForm),
+            (lf('url_tree_edit'), TreeForm),
+            (lf('url_person_create'), PersonForm),
+            (lf('url_person_edit'), PersonForm),
+    )
+)
+def test_displaying_form_on_pages(url, form_type, author_tree_client):
+    """Проверяет наличие формы на страницах."""
+    response = author_tree_client.get(url)
+    assert 'form' in response.context
+    assert isinstance(response.context['form'], form_type)

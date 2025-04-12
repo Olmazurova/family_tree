@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 import pytest
-import sqlite3
 from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse, reverse_lazy
@@ -72,6 +71,19 @@ def member_public_tree(public_tree):
     public_tree.progenitor = person
     public_tree.save()
     return person
+
+
+@pytest.fixture
+def linked_public_tree(author_tree, public_tree):
+    tree = Tree.objects.create(
+        genus_name='Связанная родословная',
+        owner=author_tree,
+        slug='linked_rodoslovnaya',
+        is_public=True,
+    )
+    tree.linked_tree.add(public_tree)
+    tree.save()
+    return tree
 
 
 @pytest.fixture
