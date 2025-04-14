@@ -1,6 +1,7 @@
 import pytest
 from pytest_django.asserts import assertRedirects
 from pytest_lazy_fixtures import lf
+from pytils.translit import slugify
 
 from trees.models import Tree, Person
 from .conftest import URL_TREE_CREATE, URL_LOGIN, URL_TREE_LIST
@@ -179,3 +180,15 @@ def test_different_users_can_or_cant_delete(parametrize_client, url, entity, red
 
     entity_list_after = entity.objects.values().all()
     assert check_iterable(entity_list_before, entity_list_after) is result
+
+
+def test_slug_formation_creation_tree(another_user_client):
+    """
+    Проверка, что если слаг не задан, при создании древа -
+    он формируется автоматически.
+    """
+    Tree.objects.all().delete()
+    response = another_user_client.post(URL_TREE_CREATE, data=FORM_DATA_TREE)
+    assertRedirects(response, URL_TREE_LIST)
+    tree = Tree.objects.last()
+    assert tree.slug == slugify(FORM_DATA_TREE['genus_name'])
