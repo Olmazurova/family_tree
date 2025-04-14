@@ -151,5 +151,31 @@ def test_different_users_can_or_cant_edit_member(
     assert (member.surname == FORM_DATA_MEMBER_EDIT['surname']) is result
 
 
+@pytest.mark.parametrize(
+    'parametrize_client, url, entity, redirect_url, result',
+    (
+            (lf('client'), lf('url_tree_delete'), Tree, URL_TREE_LIST, True),
+            (lf('client'), lf('url_person_delete'), Person, lf('url_tree_detail'), True),
+            (lf('another_user_client'), lf('url_tree_delete'), Tree, URL_TREE_LIST, True),
+            (lf('another_user_client'), lf('url_person_delete'), Person, lf('url_tree_detail'), True),
+            (lf('author_tree_client'), lf('url_tree_delete'), Tree, URL_TREE_LIST, False),
+            (lf('author_tree_client'),lf('url_person_delete'), Person, lf('url_tree_detail'), False),
+    )
+)
+def test_different_users_can_or_cant_delete(parametrize_client, url, entity, redirect_url, result):
+    """
+    Проверка, что аноним и авторизованный пользователь не могут, а автор может
+    удалить древо и члена родословной.
+    :param parametrize_client:
+    :param url:
+    :param entity:
+    :param redirect_url:
+    :param result:
+    :return:
+    """
+    entity_list_before = entity.objects.values().all()
+    response = parametrize_client.delete(url)
+    assertRedirects(response, redirect_url)
 
-    
+    entity_list_after = entity.objects.values().all()
+    assert check_iterable(entity_list_before, entity_list_after) is result
