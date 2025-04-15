@@ -1,9 +1,11 @@
+from typing import Sequence
+
 import pytest
+from django.test.client import Client
 from pytest_django.asserts import assertRedirects, assertFormError
 from pytest_lazy_fixtures import lf
 from pytils.translit import slugify
 
-from trees.forms import TreeForm
 from trees.models import Tree, Person
 from .conftest import URL_TREE_CREATE, URL_LOGIN, URL_TREE_LIST
 
@@ -33,11 +35,11 @@ FORM_DATA_MEMBER_EDIT = {
 WARNING = 'Древо с таким Идентификатор уже существует.'
 
 
-def check_iterable(iterable_1, iterable_2):
-    if len(iterable_1) == len(iterable_2):
+def check_iterable(sequence_1: Sequence, sequence_2: Sequence) -> bool:
+    if len(sequence_1) == len(sequence_2):
         result = [item_1 == item_2
                   for item_1, item_2
-                  in zip(iterable_1, iterable_2)]
+                  in zip(sequence_1, sequence_2)]
         return all(result)
     return False
 
@@ -49,10 +51,20 @@ def check_iterable(iterable_1, iterable_2):
         (URL_TREE_CREATE, FORM_DATA_TREE, Tree, URL_LOGIN),
         (lf('url_person_create'), FORM_DATA_MEMBER, Person, URL_LOGIN),
         (lf('url_tree_edit'), FORM_DATA_EDIT_TREE, Tree, lf('url_tree_detail')),
-        (lf('url_person_edit'), FORM_DATA_MEMBER_EDIT, Person, lf('url_tree_detail')),
+        (lf('url_person_edit'),
+         FORM_DATA_MEMBER_EDIT,
+         Person,
+         lf('url_tree_detail')
+         ),
     )
 )
-def test_anonymous_cant_do(url, form_data, entity, redirect_url, client):
+def test_anonymous_cant_do(
+        url: str,
+        form_data: dict,
+        entity: Tree | Person,
+        redirect_url: str,
+        client: Client
+) -> None:
     """
     Проверка, что аноним не может:
     - создать древо;
@@ -72,19 +84,37 @@ def test_anonymous_cant_do(url, form_data, entity, redirect_url, client):
 @pytest.mark.parametrize(
     'parametrize_client, url, form_data, entity, redirect_url, result',
     (
-        (lf('another_user_client'), lf('url_person_create'), FORM_DATA_MEMBER, Person, lf('url_tree_detail'), True),
-        (lf('author_tree_client'), URL_TREE_CREATE, FORM_DATA_TREE, Tree, URL_TREE_LIST, False),
-        (lf('author_tree_client'), lf('url_person_create'), FORM_DATA_MEMBER, Person, lf('url_tree_detail'), False),
+        (lf('another_user_client'),
+         lf('url_person_create'),
+         FORM_DATA_MEMBER,
+         Person,
+         lf('url_tree_detail'),
+         True
+         ),
+        (lf('author_tree_client'),
+         URL_TREE_CREATE,
+         FORM_DATA_TREE,
+         Tree,
+         URL_TREE_LIST,
+         False
+         ),
+        (lf('author_tree_client'),
+         lf('url_person_create'),
+         FORM_DATA_MEMBER,
+         Person,
+         lf('url_tree_detail'),
+         False
+         ),
     )
 )
 def test_different_users_can_or_cant_create(
-        parametrize_client,
-        url,
-        form_data,
-        entity,
-        redirect_url,
-        result
-):
+        parametrize_client: Client,
+        url: str,
+        form_data: dict,
+        entity: Tree | Person,
+        redirect_url: str,
+        result: bool
+) -> None:
     """
      Проверка, что авторизованный пользователь и автор может или не может:
     - создать древо;
@@ -108,12 +138,12 @@ def test_different_users_can_or_cant_create(
     )
 )
 def test_different_users_can_or_cant_edit_tree(
-        parametrize_client,
-        result,
-        url_tree_edit,
-        url_tree_detail,
-        public_tree
-):
+        parametrize_client: Client,
+        result: bool,
+        url_tree_edit: str,
+        url_tree_detail: str,
+        public_tree: Tree,
+) -> None:
     """
      Проверка, что авторизованный пользователь не может,
      а автор может редактировать древо.
@@ -135,12 +165,12 @@ def test_different_users_can_or_cant_edit_tree(
     )
 )
 def test_different_users_can_or_cant_edit_member(
-        parametrize_client,
-        result,
-        url_person_edit,
-        url_tree_detail,
-        member_public_tree
-):
+        parametrize_client: Client,
+        result: bool,
+        url_person_edit: str,
+        url_tree_detail: str,
+        member_public_tree: Person,
+) -> None:
     """
      Проверка, что авторизованный пользователь не может,
      а автор может редактировать члена родословной.
@@ -160,23 +190,48 @@ def test_different_users_can_or_cant_edit_member(
     'parametrize_client, url, entity, redirect_url, result',
     (
             (lf('client'), lf('url_tree_delete'), Tree, URL_TREE_LIST, True),
-            (lf('client'), lf('url_person_delete'), Person, lf('url_tree_detail'), True),
-            (lf('another_user_client'), lf('url_tree_delete'), Tree, URL_TREE_LIST, True),
-            (lf('another_user_client'), lf('url_person_delete'), Person, lf('url_tree_detail'), True),
-            (lf('author_tree_client'), lf('url_tree_delete'), Tree, URL_TREE_LIST, False),
-            (lf('author_tree_client'),lf('url_person_delete'), Person, lf('url_tree_detail'), False),
+            (lf('client'),
+             lf('url_person_delete'),
+             Person,
+             lf('url_tree_detail'),
+             True
+             ),
+            (lf('another_user_client'),
+             lf('url_tree_delete'),
+             Tree,
+             URL_TREE_LIST,
+             True
+             ),
+            (lf('another_user_client'),
+             lf('url_person_delete'),
+             Person,
+             lf('url_tree_detail'),
+             True
+             ),
+            (lf('author_tree_client'),
+             lf('url_tree_delete'),
+             Tree,
+             URL_TREE_LIST,
+             False
+             ),
+            (lf('author_tree_client'),
+             lf('url_person_delete'),
+             Person,
+             lf('url_tree_detail'),
+             False
+             ),
     )
 )
-def test_different_users_can_or_cant_delete(parametrize_client, url, entity, redirect_url, result):
+def test_different_users_can_or_cant_delete(
+        parametrize_client: Client,
+        url: str,
+        entity: Tree | Person,
+        redirect_url: str,
+        result: bool,
+) -> None:
     """
-    Проверка, что аноним и авторизованный пользователь не могут, а автор может
-    удалить древо и члена родословной.
-    :param parametrize_client:
-    :param url:
-    :param entity:
-    :param redirect_url:
-    :param result:
-    :return:
+    Проверка, что аноним и авторизованный пользователь не могут,
+    а автор может удалить древо и члена родословной.
     """
     entity_list_before = entity.objects.values().all()
     response = parametrize_client.delete(url)
@@ -186,7 +241,7 @@ def test_different_users_can_or_cant_delete(parametrize_client, url, entity, red
     assert check_iterable(entity_list_before, entity_list_after) is result
 
 
-def test_slug_formation_creation_tree(another_user_client):
+def test_slug_formation_creation_tree(another_user_client: Client) -> None:
     """
     Проверка, что если слаг не задан, при создании древа -
     он формируется автоматически.
@@ -198,11 +253,17 @@ def test_slug_formation_creation_tree(another_user_client):
     assert tree.slug == slugify(FORM_DATA_TREE['genus_name'])
 
 
-def test_cant_creation_tree_with_repeating_slug(another_user_client, public_tree):
+def test_cant_creation_tree_with_repeating_slug(
+        another_user_client: Client,
+        public_tree: Tree
+) -> None:
     """Проверка, что нельзя создать древо с повторяющимся слагом."""
     trees_before = Tree.objects.all()
     form_with_repeat_slug = FORM_DATA_TREE.update(slug=public_tree.slug)
-    response = another_user_client.post(URL_TREE_CREATE, data=form_with_repeat_slug)
+    response = another_user_client.post(
+        URL_TREE_CREATE,
+        data=form_with_repeat_slug
+    )
     assertFormError(response.context['form'], field='slug', errors=[])
 
     trees_after = Tree.objects.all()
