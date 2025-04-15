@@ -1,8 +1,9 @@
 import pytest
-from pytest_django.asserts import assertRedirects
+from pytest_django.asserts import assertRedirects, assertFormError
 from pytest_lazy_fixtures import lf
 from pytils.translit import slugify
 
+from trees.forms import TreeForm
 from trees.models import Tree, Person
 from .conftest import URL_TREE_CREATE, URL_LOGIN, URL_TREE_LIST
 
@@ -28,6 +29,9 @@ FORM_DATA_EDIT_TREE = {
 FORM_DATA_MEMBER_EDIT = {
     'surname': 'Помидоров',
 }
+
+WARNING = 'Древо с таким Идентификатор уже существует.'
+
 
 def check_iterable(iterable_1, iterable_2):
     if len(iterable_1) == len(iterable_2):
@@ -192,3 +196,14 @@ def test_slug_formation_creation_tree(another_user_client):
     assertRedirects(response, URL_TREE_LIST)
     tree = Tree.objects.last()
     assert tree.slug == slugify(FORM_DATA_TREE['genus_name'])
+
+
+def test_cant_creation_tree_with_repeating_slug(another_user_client, public_tree):
+    """Проверка, что нельзя создать древо с повторяющимся слагом."""
+    trees_before = Tree.objects.all()
+    form_with_repeat_slug = FORM_DATA_TREE.update(slug=public_tree.slug)
+    response = another_user_client.post(URL_TREE_CREATE, data=form_with_repeat_slug)
+    assertFormError(response.context['form'], field='slug', errors=[])
+
+    trees_after = Tree.objects.all()
+    assert check_iterable(trees_before, trees_after)
