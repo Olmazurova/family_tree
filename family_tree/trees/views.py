@@ -92,7 +92,6 @@ class TreeDelete(UserPassesTestMixin, DeleteView):
 
     model = Tree
     template_name = 'trees/tree_create.html'
-    success_url = reverse_lazy('trees:tree_list')
 
     def get_object(self, queryset=None):
         return get_object_or_404(Tree, slug=self.kwargs['slug'])
@@ -100,6 +99,9 @@ class TreeDelete(UserPassesTestMixin, DeleteView):
     def test_func(self):
         obj = self.get_object()
         return obj.owner == self.request.user
+
+    def get_success_url(self):
+        return reverse('trees:tree_list')
 
     def handle_no_permission(self):
         return redirect(self.get_success_url())
@@ -230,7 +232,7 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
     model = Person
     template_name = 'trees/person_create.html'
 
-    def get_object(self, queryset =None):
+    def get_object(self, queryset=None):
         return get_object_or_404(Person, id=self.kwargs['id'])
 
     # Он здесь нужен???
@@ -242,9 +244,8 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
         return context
 
     def test_func(self):
-        person = self.get_object()
-        tree = Tree.objects.get(owner=self.request.user)
-        return person.genus_name == tree.id
+        tree = Tree.objects.get(slug=self.kwargs['slug'])
+        return tree.owner == self.request.user
 
     def get_success_url(self):
         return reverse('trees:tree_detail', kwargs={'slug': self.kwargs['slug']})
