@@ -20,7 +20,7 @@ class HomeView(ListView):
 
 
 class MyTreeList(LoginRequiredMixin, ListView):
-    """Представление списка древ Рода, владельцем которых являтеся пользователь."""
+    """Представление списка древ Рода, владельцем которых является пользователь."""
 
     model = Tree
     paginate_by = settings.ITEMS_COUNT_OF_PAGE
@@ -57,6 +57,13 @@ class TreeStructure(LoginRequiredMixin, DetailView):
     model = Tree
     template_name = 'trees/tree_structure.html'
     context_object_name = 'tree_obj'
+
+    def get_object(self, queryset=None):
+        obj = Tree.objects.get(slug=self.kwargs['slug'])
+        if obj.owner == self.request.user:
+            return obj
+        else:
+            return get_object_or_404(Tree, slug=self.kwargs['slug'], is_public=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -139,8 +146,14 @@ class PersonDetail(LoginRequiredMixin, DetailView):
     template_name = 'trees/person_detail.html'
 
     def get_object(self, queryset=None):
-        obj = get_object_or_404(Person, id=self.kwargs['id'])
-        return obj
+        obj = Tree.objects.get(slug=self.kwargs['slug'])
+        if obj.owner == self.request.user:
+            return get_object_or_404(Person, id=self.kwargs['id'])
+
+        else:
+            return get_object_or_404(
+                Person, id=self.kwargs['id'], genus_name__is_public=True
+            )
 
 
     def get_context_data(self, **kwargs):
@@ -169,6 +182,10 @@ class PersonCreate(UserPassesTestMixin, CreateView):
 
         tree = Tree.objects.get(slug=self.kwargs['slug'])
         setting_level(new_person, tree)
+        members = Person.objects.filter(genus_name=tree)
+        if not members:
+            tree.progenitor = new_person
+            tree.save()
 
         return super().form_valid(form)
 

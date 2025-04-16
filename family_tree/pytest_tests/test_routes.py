@@ -43,11 +43,11 @@ def test_pages_for_anonymous_user(url, expected_status, client):
             (lf('url_tree_edit'), HTTPStatus.FOUND),
             (lf('url_tree_delete'), HTTPStatus.FOUND),
             (lf('url_person_edit'), HTTPStatus.FOUND),
-            (lf('url_person_delete'), HTTPStatus.NOT_FOUND),
+            (lf('url_person_delete'), HTTPStatus.FOUND),
             (lf('url_person_create'), HTTPStatus.FOUND),
             (lf('url_non_public_tree_detail'), HTTPStatus.NOT_FOUND),
             (lf('url_non_public_person_detail'), HTTPStatus.NOT_FOUND),
-            (lf('url_non_public_tree_structure'), HTTPStatus.FOUND),
+            (lf('url_non_public_tree_structure'), HTTPStatus.NOT_FOUND),
     )
 )
 def test_pages_for_auth_user(another_user_client, url, expected_status):

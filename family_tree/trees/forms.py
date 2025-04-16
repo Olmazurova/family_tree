@@ -48,3 +48,4 @@ class PersonForm(forms.ModelForm):
 
         if isinstance(birthday_date, date) and isinstance(death_date, date) and death_date < birthday_date:
             raise ValidationError('Дата смерти не может быть раньше даты рождения!')
+
