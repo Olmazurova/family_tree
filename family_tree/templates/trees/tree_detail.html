@@ -15,20 +15,29 @@
     <p><b>Владелец: </b>
         <a class="text-decoration-none text-reset"
                   href="{% url 'users:profile' tree_obj.owner %}">{{ tree_obj.owner }}</a></p>
+    <div  class="col-6 offset-3 mb-5 lead text-lg-start">
     <p><b>Члены рода:</b></p>
     <p><b>Родоначальник - {{ ancestor }}</b></p>
-    {% for person in members %}
-      <article class="mb-5">
-          {% include "includes/person_card.html" %}
-        </article>
-    {% endfor %}
+    {% if not page_obj %}
+        <p class="text-center">Ещё не добавлено ни одного члена родословной.</p>
+    {% else %}
+        {% for person in page_obj %}
+          <article class="mb-5">
+              {% include "includes/person_card.html" %}
+            </article>
+        {% endfor %}
+        {% include "includes/paginator.html" %}
+    {% endif %}
+    </div>
 
+    {% if page_obj %}
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
       <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:tree_image' tree_obj.slug %}">Показать изображением</a></button>
         <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
                   href="{% url 'trees:tree_structure' tree_obj.slug %}">Показать структурой</a></button>
     </div>
+    {% endif %}
 
 <br>
 {% if user == tree_obj.owner %}

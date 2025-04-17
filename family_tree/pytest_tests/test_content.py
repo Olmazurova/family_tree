@@ -19,13 +19,13 @@ IMAGE_FILE = 'test_image.jpg'
     (
             (URL_HOME, 'object_list'),
             (URL_TREE_LIST, 'object_list'),
-            (lf('url_tree_detail'), 'members'),
+            (lf('url_tree_detail'), 'page_obj'),
     )
 )
 def test_page_pagination(url, key, author_tree_client):
     """Проверяет количество выводимых объектов на страницах."""
     response = author_tree_client.get(url)
-    items_count = response.context[key].count()
+    items_count = len(response.context[key])
     assert items_count == settings.ITEMS_COUNT_OF_PAGE
 
 

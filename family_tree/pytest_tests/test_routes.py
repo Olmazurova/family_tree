@@ -1,13 +1,13 @@
 from http import HTTPStatus
 
 import pytest
-from django.urls import reverse, reverse_lazy
 from pytest_lazy_fixtures import lf
 
-from family_tree.pytest_tests.conftest import public_tree, member_public_tree, another_user, author_tree_client
+from family_tree.pytest_tests.conftest import author_tree_client
 
 from .conftest import (
-    URL_HOME, URL_REG, URL_LOGIN, URL_RULES, URL_TREE_CREATE, URL_TREE_LIST, URL_USER_LOGOUT, URL_USER_EDIT
+    URL_HOME, URL_REG, URL_LOGIN, URL_RULES, URL_TREE_CREATE,
+    URL_TREE_LIST, URL_USER_LOGOUT, URL_USER_EDIT
 )
 
 

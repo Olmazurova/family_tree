@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
 from django.urls import reverse, reverse_lazy
@@ -48,7 +49,12 @@ class TreeDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         ancestor = context['tree_obj'].progenitor
         context['trees'] = Tree.objects.filter(linked_tree=context['tree_obj'].id)
-        context['members'] = Person.objects.filter(genus_name=context['tree_obj'].id)
+
+        members = Person.objects.filter(genus_name=context['tree_obj'].id).order_by('birthday')
+        paginator = Paginator(members, 10)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        context['page_obj'] = page_obj
         context['ancestor'] = ancestor
         return context
 
