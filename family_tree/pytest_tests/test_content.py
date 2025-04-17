@@ -56,7 +56,7 @@ def test_order_members_on_page(url_tree_detail, author_tree_client):
     response = author_tree_client.get(url_tree_detail)
     response_items_list = [member.birthday
                            for member
-                           in response.context['members']
+                           in response.context['page_obj']
                            ]
     expected_items_list = sorted(response_items_list)
     assert response_items_list == expected_items_list
@@ -85,7 +85,7 @@ def test_has_image_on_pages_person(url, author_tree_client):
             (URL_HOME, lf('public_tree'), 'object_list', True),
             (URL_HOME, lf('non_public_tree'), 'object_list', False),
             (lf('url_tree_detail'), lf('linked_public_tree'), 'trees', True),
-            (lf('url_tree_detail'), lf('member_public_tree'), 'members', True),
+            (lf('url_tree_detail'), lf('member_public_tree'), 'page_obj', True),
             (URL_TREE_LIST, lf('public_tree'), 'object_list', True),
             (URL_TREE_LIST, lf('non_public_tree'), 'object_list', True),
     )
@@ -155,11 +155,17 @@ def test_displaying_form_on_pages(url, form_type, author_tree_client):
     assert 'form' in response.context
     assert isinstance(response.context['form'], form_type)
 
+
 @pytest.mark.parametrize(
-    'url',
-    (lf('url_tree_delete'), lf('url_person_delete'))
+    'url, expected_form',
+    (
+            (lf('url_tree_delete'), TreeForm),
+            (lf('url_person_delete'), PersonForm),
+    )
 )
-def test_absence_form_on_pages(url, author_tree_client):
+def test_absence_form_on_pages(url, expected_form, author_tree_client):
     """Проверяет отсутствие отображения формы на страницах."""
     response = author_tree_client.get(url)
-    assert 'form' not in response.context
+    form = response.context.get('form')
+    # проверка идёт по сущности формы, т.к. даже при удалении в контексте есть ключ 'form'
+    assert not isinstance(form, expected_form)

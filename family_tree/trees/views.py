@@ -258,14 +258,6 @@ class PersonDelete(UserPassesTestMixin, DeleteView):
     def get_object(self, queryset=None):
         return get_object_or_404(Person, id=self.kwargs['id'])
 
-    # Он здесь нужен???
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        instance = get_object_or_404(Person, pk=self.kwargs['id'])
-        form = PersonForm(self.request.POST or None, instance=instance)
-        context['form'] = form
-        return context
-
     def test_func(self):
         tree = Tree.objects.get(slug=self.kwargs['slug'])
         return tree.owner == self.request.user
