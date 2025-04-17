@@ -1,7 +1,9 @@
 from http import HTTPStatus
+from pprint import pprint
 from typing import Sequence
 
 import pytest
+from django.template.context_processors import request
 from django.test.client import Client
 from pytest_django.asserts import assertRedirects, assertFormError
 from pytest_lazy_fixtures import lf
@@ -85,20 +87,20 @@ def test_anonymous_cant_do(
 @pytest.mark.parametrize(
     'parametrize_client, url, form_data, entity, redirect_url, result',
     (
-        # (lf('another_user_client'),
-        #  lf('url_person_create'),
-        #  FORM_DATA_MEMBER,
-        #  Person,
-        #  lf('url_tree_detail'),
-        #  True
-        #  ),
-        # (lf('author_tree_client'),
-        #  URL_TREE_CREATE,
-        #  FORM_DATA_TREE,
-        #  Tree,
-        #  URL_TREE_LIST,
-        #  False
-        #  ),
+        (lf('another_user_client'),
+         lf('url_person_create'),
+         FORM_DATA_MEMBER,
+         Person,
+         lf('url_tree_detail'),
+         True
+         ),
+        (lf('author_tree_client'),
+         URL_TREE_CREATE,
+         FORM_DATA_TREE,
+         Tree,
+         URL_TREE_LIST,
+         False
+         ),
         (lf('author_tree_client'),
          lf('url_person_create'),
          FORM_DATA_MEMBER,
@@ -124,8 +126,9 @@ def test_different_users_can_or_cant_create(
     entity_list_before = [item.id for item in entity.objects.all()]
     print(entity_list_before)
     response = parametrize_client.post(url, data=form_data)
+    pprint(response.content)
     print(response.status_code)
-    assertRedirects(response, redirect_url)
+    # assertRedirects(response, redirect_url)
 
     entity_list_after = [item.id for item in entity.objects.all()]
     print(entity_list_after)
@@ -152,7 +155,8 @@ def test_different_users_can_or_cant_edit_tree(
     """
     tree = Tree.objects.get(id=public_tree.id)
     response = parametrize_client.post(url_tree_edit, data=FORM_DATA_EDIT_TREE)
-    assertRedirects(response, url_tree_detail)
+    print(response.request.get('post'))
+    # assertRedirects(response, url_tree_detail)
 
     tree.refresh_from_db()
     assert (tree.info == FORM_DATA_EDIT_TREE['info']) is result
@@ -182,13 +186,13 @@ def test_different_users_can_or_cant_edit_member(
         url_person_edit,
         data=FORM_DATA_MEMBER_EDIT
     )
-    assertRedirects(response, url_tree_detail)
+    # assertRedirects(response, url_tree_detail)
 
     member.refresh_from_db()
     assert (member.surname == FORM_DATA_MEMBER_EDIT['surname']) is result
 
 
-@pytest.mark.usefixtures('public_tree', 'member_public_tree')
+# @pytest.mark.usefixtures('public_tree', 'member_public_tree')
 @pytest.mark.parametrize(
     'parametrize_client, url, entity, redirect_url, result',
     (

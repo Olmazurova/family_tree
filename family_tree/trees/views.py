@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
 from django.urls import reverse, reverse_lazy
 from pytils.translit import slugify
@@ -134,6 +134,13 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
         context['form'] = form
         return context
 
+    # def post(self, request, *args, **kwargs):
+    #     form = TreeForm(self.request.POST, self.request.FILES)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect(self.get_success_url())
+    #     return render(request, self.template_name, {'form': form})
+
     def test_func(self):
         obj = self.get_object()
         return obj.owner == self.request.user
@@ -187,11 +194,12 @@ class PersonCreate(UserPassesTestMixin, CreateView):
             spouse.save()
 
         tree = Tree.objects.get(slug=self.kwargs['slug'])
-        setting_level(new_person, tree)
+        # setting_level(new_person, tree)
         members = Person.objects.filter(genus_name=tree)
         if not members:
             tree.progenitor = new_person
             tree.save()
+        # new_person.save()
 
         return super().form_valid(form)
 
@@ -238,7 +246,8 @@ class PersonUpdate(UserPassesTestMixin, UpdateView):
             spouse.save()
 
         tree = Tree.objects.get(slug=self.kwargs['slug'])
-        setting_level(new_person, tree)
+        # setting_level(new_person, tree)
+        # new_person.save()
 
         return super().form_valid(form)
 

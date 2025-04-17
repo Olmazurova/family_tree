@@ -1,7 +1,4 @@
-from pprint import pprint
-
 import pytest
-from PIL import Image
 from pytest_lazy_fixtures import lf
 from django.conf import settings
 

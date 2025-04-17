@@ -10,7 +10,7 @@
       {% endif %}
     <p><b>Род: </b><a href="{% url 'trees:tree_detail' person_tree.slug %}" class="text-dark">{{ person_tree }}</a></p>
 
-    <p><b>Поколение: </b>{{ person.level }}</p>
+{#    <p><b>Поколение: </b>{{ person.level }}</p>#}
     <p><b>Фамилия: </b>{% if person.surname %}{{ person.surname }}{% else %}неизвестно{% endif %}</p>
     <p><b>Имя: </b>{% if person.name %}{{ person.name }}{% else %}неизвестно{% endif %}</p>
     <p><b>Отчество: </b>{% if person.patronymic %}{{ person.patronymic }}{% else %}неизвестно{% endif %}</p><br>
