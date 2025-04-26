@@ -1,5 +1,7 @@
 
 from datetime import date
+from pprint import pprint
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -64,14 +66,14 @@ class PersonForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        tree = kwargs.pop('tree', None)
         super(self.__class__, self).__init__(*args, **kwargs)
-        if self.instance:
+        if self.instance.id is not None:
             # фильтруем объекты, которые будут выводиться для выбора в форме
             trees = Tree.objects.filter(person_id=self.instance.id)
             self.fields['parents'].queryset = Person.objects.filter(
                 genus_name__in=trees
             )
-
             self.fields['spouse'].queryset = Person.objects.filter(
                 genus_name__in=trees
             ).filter(~Q(gender=self.instance.gender))
@@ -79,6 +81,18 @@ class PersonForm(forms.ModelForm):
             self.fields['genus_name'].queryset = Tree.objects.filter(
                 owner__in=[tree.owner for tree in trees]
             )
+        else:
+            self.fields['parents'].queryset = Person.objects.filter(
+                genus_name=tree
+            )
+            self.fields['spouse'].queryset = Person.objects.filter(
+                genus_name=tree
+            ).filter(~Q(gender=self.instance.gender))
+
+            self.fields['genus_name'].queryset = Tree.objects.filter(
+                owner=tree.owner
+            )
+
 
     def clean(self):
         birthday_date = self.cleaned_data['birthday']

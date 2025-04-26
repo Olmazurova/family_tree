@@ -15,7 +15,7 @@ from .views import (
 
 app_name = 'trees'
 
-# пути древа
+# пути родословной
 urlpatterns = [
     path('list/', MyTreeList.as_view(), name='tree_list'),
     path('create/', TreeCreate.as_view(), name='tree_create'),
@@ -27,7 +27,7 @@ urlpatterns = [
 
 ]
 
-# пути человека
+# пути членов родословной
 urlpatterns += [
     path('<str:slug>/person/<int:id>/', PersonDetail.as_view(), name='person'),
     path('<str:slug>/person/<int:id>/edit/', PersonUpdate.as_view(), name='person_edit'),
