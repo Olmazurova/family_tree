@@ -133,10 +133,6 @@ class Person(models.Model):
         related_name='my_spouse',
         help_text='Чтобы отменить выбранного человека: ctrl + нажмите имя человека.'
     )
-    # level = models.SmallIntegerField(
-    #     'Поколение',
-    #     null=True,
-    # )
 
     class Meta:
         verbose_name = 'член родословной'

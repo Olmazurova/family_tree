@@ -8,7 +8,7 @@ from pytils.translit import slugify
 
 from .models import Tree, Person
 from .forms import TreeForm, PersonForm
-from .utils import setting_level, form_valid_base
+from .utils import form_valid_base
 
 
 class HomeView(ListView):
@@ -53,7 +53,7 @@ class TreeDetail(LoginRequiredMixin, DetailView):
         members = Person.objects.filter(
             genus_name=context['tree_obj'].id
         ).order_by('birthday')
-        paginator = Paginator(members, 10)
+        paginator = Paginator(members, settings.ITEMS_COUNT_OF_PAGE)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         context['page_obj'] = page_obj
