@@ -1,9 +1,9 @@
 import pytest
-from pytest_lazy_fixtures import lf
 from django.conf import settings
+from pytest_lazy_fixtures import lf
 
-from .conftest import URL_HOME, URL_TREE_LIST, URL_TREE_CREATE
-from trees.forms import TreeForm, PersonForm
+from trees.forms import PersonForm, TreeForm
+from .conftest import URL_HOME, URL_TREE_CREATE, URL_TREE_LIST
 
 IMAGE_FILE = 'test_image.jpg'
 

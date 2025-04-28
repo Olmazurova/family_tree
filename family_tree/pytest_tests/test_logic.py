@@ -1,18 +1,16 @@
-from http import HTTPStatus
 from pprint import pprint
 from typing import Sequence
 
 import pytest
-from django.template.context_processors import request
 from django.test.client import Client
-from pytest_django.asserts import assertRedirects, assertFormError
+from pytest_django.asserts import assertFormError, assertRedirects
 from pytest_lazy_fixtures import lf
 from pytils.translit import slugify
 
-from trees.models import Tree, Person
-from .conftest import URL_TREE_CREATE, URL_LOGIN, URL_TREE_LIST
-
 from family_tree.pytest_tests.conftest import public_tree
+from trees.models import Person, Tree
+
+from .conftest import URL_LOGIN, URL_TREE_CREATE, URL_TREE_LIST
 
 FORM_DATA_TREE = {
     'genus_name': 'Ещё одна родословная',
@@ -52,13 +50,13 @@ def check_sequence(sequence_1: Sequence, sequence_2: Sequence) -> bool:
     'url, form_data, entity, redirect_url',
     (
         (URL_TREE_CREATE, FORM_DATA_TREE, Tree, URL_LOGIN),
-        # (lf('url_person_create'), FORM_DATA_MEMBER, Person, URL_LOGIN),
-        # (lf('url_tree_edit'), FORM_DATA_EDIT_TREE, Tree, lf('url_tree_detail')),
-        # (lf('url_person_edit'),
-        #  FORM_DATA_MEMBER_EDIT,
-        #  Person,
-        #  URL_LOGIN,
-        #  ),
+        (lf('url_person_create'), FORM_DATA_MEMBER, Person, URL_LOGIN),
+        (lf('url_tree_edit'), FORM_DATA_EDIT_TREE, Tree, lf('url_tree_detail')),
+        (lf('url_person_edit'),
+         FORM_DATA_MEMBER_EDIT,
+         Person,
+         URL_LOGIN,
+         ),
     )
 )
 def test_anonymous_cant_do(

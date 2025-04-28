@@ -5,10 +5,9 @@ from pytest_lazy_fixtures import lf
 
 from family_tree.pytest_tests.conftest import author_tree_client
 
-from .conftest import (
-    URL_HOME, URL_REG, URL_LOGIN, URL_RULES, URL_TREE_CREATE,
-    URL_TREE_LIST, URL_USER_LOGOUT, URL_USER_EDIT
-)
+from .conftest import (URL_HOME, URL_LOGIN, URL_REG, URL_RULES,
+                       URL_TREE_CREATE, URL_TREE_LIST, URL_USER_EDIT,
+                       URL_USER_LOGOUT)
 
 
 @pytest.mark.django_db
