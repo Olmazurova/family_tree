@@ -18,4 +18,8 @@ class FamilyTreeUser(AbstractUser):
         blank=True,
         default=date(1, 1, 1),
     )
-    photo = models.ImageField("Фото", blank=True, upload_to="users_photo")
+    photo = models.ImageField(
+        "Фото",
+        blank=True,
+        upload_to="users_photo"
+    )

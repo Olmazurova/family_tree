@@ -1,12 +1,10 @@
-
 from datetime import date
-from pprint import pprint
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
-from .models import Tree, Person
+from .models import Person, Tree
 
 
 class TreeForm(forms.ModelForm):

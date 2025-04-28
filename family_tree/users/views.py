@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import CreateView, DetailView, UpdateView, TemplateView
 from django.urls import reverse_lazy
+from django.views.generic import (CreateView, DetailView, TemplateView,
+                                  UpdateView)
 
 from trees.models import Tree
-from .forms import UserForm, UserEditForm
+
+from .forms import UserEditForm, UserForm
 
 User = get_user_model()
 

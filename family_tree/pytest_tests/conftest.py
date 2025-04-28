@@ -6,7 +6,7 @@ from django.test.client import Client
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 
-from trees.models import Tree, Person
+from trees.models import Person, Tree
 
 IMAGE_FILE = 'test_image.jpg'
 
