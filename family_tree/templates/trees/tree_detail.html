@@ -32,10 +32,8 @@
 
     {% if page_obj %}
     <div class="btn-group top-100 start-50 translate-middle" role="group" aria-label="Basic outlined example">
-      <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
-                  href="{% url 'trees:tree_image' tree_obj.slug %}">Показать изображением</a></button>
         <button type="button" class="btn btn-dark"><a class="text-decoration-none text-reset"
-                  href="{% url 'trees:tree_structure' tree_obj.slug %}">Показать структурой</a></button>
+                  href="{% url 'trees:tree_structure' tree_obj.slug %}">Показать структуру родословной</a></button>
     </div>
     {% endif %}
 

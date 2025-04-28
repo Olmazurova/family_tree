@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView, TemplateView
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
 from pytils.translit import slugify
 
-from .models import Tree, Person
-from .forms import TreeForm, PersonForm
+from .forms import PersonForm, TreeForm
+from .models import Person, Tree
 from .utils import form_valid_base
 
 
@@ -43,12 +44,18 @@ class TreeDetail(LoginRequiredMixin, DetailView):
         if obj.owner == self.request.user:
             return obj
         else:
-            return get_object_or_404(Tree, slug=self.kwargs['slug'], is_public=True)
+            return get_object_or_404(
+                Tree,
+                slug=self.kwargs['slug'],
+                is_public=True
+            )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ancestor = context['tree_obj'].progenitor
-        context['trees'] = Tree.objects.filter(linked_tree=context['tree_obj'].id)
+        context['trees'] = Tree.objects.filter(
+            linked_tree=context['tree_obj'].id
+        )
 
         members = Person.objects.filter(
             genus_name=context['tree_obj'].id
@@ -71,7 +78,11 @@ class TreeStructure(LoginRequiredMixin, DetailView):
         if obj.owner == self.request.user:
             return obj
         else:
-            return get_object_or_404(Tree, slug=self.kwargs['slug'], is_public=True)
+            return get_object_or_404(
+                Tree,
+                slug=self.kwargs['slug'],
+                is_public=True
+            )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -80,13 +91,6 @@ class TreeStructure(LoginRequiredMixin, DetailView):
         ).select_related('spouse')
         context['ancestor'] = ancestor[0]
         return context
-
-
-class TreeImage(LoginRequiredMixin, DetailView):
-    model = Tree
-    template_name = 'trees/tree_image.html'
-    context_object_name = 'tree_obj'
-
 
 
 class TreeCreate(LoginRequiredMixin, CreateView):
@@ -137,13 +141,6 @@ class TreeUpdate(UserPassesTestMixin, UpdateView):
         form = TreeForm(self.request.POST or None, instance=instance)
         context['form'] = form
         return context
-
-    # def post(self, request, *args, **kwargs):
-    #     form = TreeForm(self.request.POST, self.request.FILES)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect(self.get_success_url())
-    #     return render(request, self.template_name, {'form': form})
 
     def test_func(self):
         obj = self.get_object()
@@ -221,7 +218,11 @@ class PersonDetail(LoginRequiredMixin, PersonBaseViewMixin, DetailView):
         return context
 
 
-class PersonCreate(PersonPermissionMixin, PersonViewAddFormKwargsMixin, CreateView):
+class PersonCreate(
+    PersonPermissionMixin,
+    PersonViewAddFormKwargsMixin,
+    CreateView
+):
     """Представление создания нового члена древа Рода."""
 
     form_class = PersonForm
@@ -240,7 +241,11 @@ class PersonCreate(PersonPermissionMixin, PersonViewAddFormKwargsMixin, CreateVi
         return super().form_valid(form)
 
 
-class PersonUpdate(PersonPermissionMixin, PersonViewAddFormKwargsMixin, UpdateView):
+class PersonUpdate(
+    PersonPermissionMixin,
+    PersonViewAddFormKwargsMixin,
+    UpdateView
+):
     """Представление редактирования члена древа Рода."""
 
     form_class = PersonForm
@@ -255,7 +260,8 @@ class PersonUpdate(PersonPermissionMixin, PersonViewAddFormKwargsMixin, UpdateVi
     def test_func(self):
         person = self.get_object()
         tree = Tree.objects.get(slug=self.kwargs['slug'])
-        return tree.owner == self.request.user and person in tree.person_id.all()
+        return (tree.owner == self.request.user
+                and person in tree.person_id.all())
 
     def form_valid(self, form):
         form_valid_base(form)
