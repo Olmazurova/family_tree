@@ -32,7 +32,7 @@ class Tree(models.Model):
     linked_tree = models.ManyToManyField(
         'self',
         blank=True,
-        verbose_name='Связанное древо'
+        verbose_name='Связанное древо',
     )
     owner = models.ForeignKey(
         User,
@@ -63,8 +63,8 @@ class Tree(models.Model):
 
     class Meta:
         ordering = ('created_at',)
-        verbose_name = 'Древо'
-        verbose_name_plural = 'Древа'
+        verbose_name = 'древо'
+        verbose_name_plural = 'Родословные'
 
     def __str__(self):
         return self.genus_name

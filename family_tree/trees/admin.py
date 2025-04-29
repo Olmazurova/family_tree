@@ -5,6 +5,15 @@ from .models import Tree, Person
 admin.site.empty_value_display = 'Отсутствует'
 
 
+class LinkedTreeInline(admin.TabularInline):
+    """Класс для отражения в админке связанных родословных."""
+    # не работает, говорит, что поля from_tree_id нет
+    model = Tree.linked_tree.through
+    fields = ('genus_name',)
+    extra = 0
+    fk_name = "from_tree_id"
+
+
 @admin.register(Tree)
 class TreeAdmin(admin.ModelAdmin):
     """Класс администрирования древа."""
@@ -14,7 +23,6 @@ class TreeAdmin(admin.ModelAdmin):
         'created_at',
         'changed_at',
         'info',
-        # 'linked_tree', # как в админке отобразить поля M:N?
         'owner',
         'is_public',
         'slug'
@@ -33,6 +41,7 @@ class TreeAdmin(admin.ModelAdmin):
         'genus_name',
         'info',
     )
+    # inlines = (LinkedTreeInline,)  # не работает
 
 
 @admin.register(Person)
@@ -40,7 +49,6 @@ class PersonAdmin(admin.ModelAdmin):
     """Класс администрирования человека."""
 
     list_display = (
-        # 'genus_name', # как в админке отобразить поля M:N?
         'surname',
         'name',
         'maiden_name',
@@ -48,14 +56,10 @@ class PersonAdmin(admin.ModelAdmin):
         'birthday',
         'date_of_death',
         'gender',
-        # 'biography',
         'photo',
-        # 'parents',
         'spouse',
-        # 'child',
     )
     list_filter = (
-        # 'genus_name',
         'surname',
         'name',
         'maiden_name',
@@ -64,7 +68,6 @@ class PersonAdmin(admin.ModelAdmin):
         'gender',
     )
     list_display_links = (
-        # 'genus_name',
         'surname',
         'name',
         'maiden_name',
@@ -72,7 +75,4 @@ class PersonAdmin(admin.ModelAdmin):
         'birthday',
         'date_of_death',
         'gender',
-        # 'biography',
     )
-
-
