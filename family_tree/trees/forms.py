@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 
 from .models import Person, Tree
+from .utils import WIDGET_SETTINGS
+
 
 
 class TreeForm(forms.ModelForm):
@@ -36,7 +38,7 @@ class TreeForm(forms.ModelForm):
 
 
 class PersonForm(forms.ModelForm):
-    """Форма описания человека на основе модели описания человека."""
+    """Форма описания члена родословной на основе соответствующей модели."""
 
     class Meta:
         model = Person
@@ -55,12 +57,8 @@ class PersonForm(forms.ModelForm):
             'spouse',
         )
         widgets = {
-            'birthday': forms.DateInput(
-                format=('%Y-%m-%d'), attrs={'type': 'date'}
-            ),
-            'date_of_death': forms.DateInput(
-                format=('%Y-%m-%d'), attrs={'type': 'date'}
-            ),
+            'birthday': WIDGET_SETTINGS,
+            'date_of_death': WIDGET_SETTINGS,
         }
 
     def __init__(self, *args, **kwargs):

@@ -1,6 +1,10 @@
+from django import forms
 from django.shortcuts import get_object_or_404
 
 from .models import Tree
+
+
+WIDGET_SETTINGS = forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date'})
 
 
 def get_tree(obj):
